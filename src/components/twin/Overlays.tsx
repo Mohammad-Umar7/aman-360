@@ -1,8 +1,8 @@
 "use client";
 
 import { Html, Line } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { ASSEMBLY_POINTS, FLOOD_POLYGON, POI, UNDERPASS, buildingById } from "@/lib/data/district";
 import { pointAlong } from "@/lib/engine/geometry";
@@ -50,20 +50,46 @@ function HazardZone() {
     const s = new THREE.Shape();
     FLOOD_POLYGON.forEach((p, i) => (i === 0 ? s.moveTo(p.x, p.y) : s.lineTo(p.x, p.y)));
     s.closePath();
+    // leave the sunken underpass open so the flood water itself stays visible
+    // (kept strictly inside the polygon outline, otherwise the triangulation breaks)
+    const hole = new THREE.Path();
+    hole.moveTo(UNDERPASS.x0 - 2, -8.4);
+    hole.lineTo(UNDERPASS.x1 - 3, -8.4);
+    hole.lineTo(UNDERPASS.x1 - 3, 8.4);
+    hole.lineTo(UNDERPASS.x0 - 2, 8.4);
+    hole.closePath();
+    s.holes.push(hole);
     return s;
   }, []);
   const outline = useMemo(() => [...FLOOD_POLYGON, FLOOD_POLYGON[0]].map((p) => toWorld(p, 0.55)), []);
+  // translucent "fence" along the outer boundary only (no caps, no walls around the underpass cut-out)
+  const fence = useMemo(() => {
+    const h0 = 0.4;
+    const h1 = 4.4;
+    const pos: number[] = [];
+    const n = FLOOD_POLYGON.length;
+    for (let i = 0; i < n; i++) {
+      const a = FLOOD_POLYGON[i];
+      const b = FLOOD_POLYGON[(i + 1) % n];
+      const A0 = toWorld(a, h0), A1 = toWorld(a, h1), B0 = toWorld(b, h0), B1 = toWorld(b, h1);
+      pos.push(...A0, ...B0, ...B1, ...A0, ...B1, ...A1);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    g.computeVertexNormals();
+    return g;
+  }, []);
   const lineRef = useRef<THREE.Group>(null);
   const fill = useRef<THREE.MeshBasicMaterial>(null);
-  const fence = useRef<THREE.MeshBasicMaterial>(null);
+  const fenceMat = useRef<THREE.MeshBasicMaterial>(null);
   const group = useRef<THREE.Group>(null);
   useFrame((st) => {
     const { step, t } = useSim.getState();
     const on = hazardVisible(step, t);
     if (group.current) group.current.visible = on;
     const pulse = 0.5 + 0.5 * Math.sin(st.clock.getElapsedTime() * 1.6);
-    if (fill.current) fill.current.opacity = 0.08 + 0.05 * pulse;
-    if (fence.current) fence.current.opacity = 0.05 + 0.03 * pulse;
+    if (fill.current) fill.current.opacity = 0.05 + 0.03 * pulse;
+    if (fenceMat.current) fenceMat.current.opacity = 0.04 + 0.03 * pulse;
     // dashed outline crawl
     lineRef.current?.traverse((o) => {
       const m = (o as THREE.Object3D & { material?: THREE.ShaderMaterial & { dashOffset?: number } }).material;
@@ -74,11 +100,11 @@ function HazardZone() {
     <group ref={group}>
       <mesh rotation-x={-Math.PI / 2} position-y={0.4} renderOrder={2}>
         <shapeGeometry args={[shape]} />
-        <meshBasicMaterial ref={fill} color="#f0554f" transparent opacity={0.1} depthWrite={false} side={THREE.DoubleSide} />
+        {/* single-sided: invisible from below, so the water's planar reflection never mirrors it */}
+        <meshBasicMaterial ref={fill} color="#f0554f" transparent opacity={0.1} depthWrite={false} side={THREE.FrontSide} />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} position-y={0.4} renderOrder={2}>
-        <extrudeGeometry args={[shape, { depth: 4, bevelEnabled: false }]} />
-        <meshBasicMaterial ref={fence} color="#f0554f" transparent opacity={0.06} depthWrite={false} side={THREE.DoubleSide} />
+      <mesh geometry={fence} renderOrder={2}>
+        <meshBasicMaterial ref={fenceMat} color="#f0554f" transparent opacity={0.06} depthWrite={false} side={THREE.DoubleSide} />
       </mesh>
       <group ref={lineRef}>
         <Line points={outline} color="#ff6b63" lineWidth={2} dashed dashSize={3} gapSize={2} transparent opacity={0.95} />
@@ -271,15 +297,32 @@ function VmsLabel() {
   );
 }
 
+/**
+ * Overlay geometry lives on layer 1: the main camera renders it, but the water's
+ * planar reflection camera (layer 0 only) does not — so the flood surface mirrors
+ * the district, not the hazard fill and route lines drawn above it.
+ */
+function OverlayLayer({ children }: { children: React.ReactNode }) {
+  const ref = useRef<THREE.Group>(null);
+  const camera = useThree((s) => s.camera);
+  useEffect(() => {
+    camera.layers.enable(1);
+    ref.current?.traverse((o) => o.layers.set(1));
+  }, [camera]);
+  return <group ref={ref}>{children}</group>;
+}
+
 export function Overlays({ compact, labels = true }: { compact?: boolean; labels?: boolean }) {
   return (
     <>
-      <HazardZone />
-      <Routes />
+      <OverlayLayer>
+        <HazardZone />
+        <Routes />
+        <HelpBeacon />
+        {labels && <AssemblyMarkers />}
+      </OverlayLayer>
       {labels && <ClosureLabel />}
       {labels && <PeopleLabels compact={compact} />}
-      {labels && <AssemblyMarkers />}
-      <HelpBeacon />
       {labels && <AmbulanceLabel />}
       {labels && !compact && <VmsLabel />}
     </>

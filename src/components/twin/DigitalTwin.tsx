@@ -3,7 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { useProgress } from "@react-three/drei";
 import * as THREE from "three";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Scene } from "@/components/twin/Scene";
 import { TwinHUD } from "@/components/twin/TwinHUD";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,41 @@ function Loader() {
         </div>
         <div className="mt-2 text-[12px] text-ink-3 num">{Math.round(progress)}% · Blender district model</div>
       </div>
+    </div>
+  );
+}
+
+/** Dev-only: surfaces WebGL/shader errors and the water state on screen so they can be checked without devtools. */
+function DevDiagnostics() {
+  const [info, setInfo] = useState<string[]>([]);
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    if (!new URLSearchParams(window.location.search).has("debug")) return;
+    const id = window.setInterval(() => {
+      const w = window as unknown as { __amanErrors?: string[]; __amanScene?: THREE.Scene; __amanGL?: THREE.WebGLRenderer };
+      const errs = (w.__amanErrors ?? []).filter((e) => /THREE|shader|Shader|GLSL|WebGL/.test(e)).slice(-2).map((e) => e.replace(/\s+/g, " ").slice(0, 220));
+      // programs that failed to compile/link, straight from the renderer
+      type Prog = { diagnostics?: { runnable: boolean; programLog?: string; fragmentShader?: { log?: string }; vertexShader?: { log?: string }; material?: { type?: string; name?: string } } };
+      const progs = ((w.__amanGL?.info.programs ?? []) as unknown as Prog[]).filter((p) => p.diagnostics && !p.diagnostics.runnable);
+      for (const p of progs) {
+        const d = p.diagnostics!;
+        errs.push(`program failed (${d.material?.type ?? "?"}): ${(d.fragmentShader?.log || d.vertexShader?.log || d.programLog || "").replace(/\s+/g, " ").slice(0, 260)}`);
+      }
+      let water = "water: none";
+      w.__amanScene?.traverse((o) => {
+        const m = (o as THREE.Mesh).material as THREE.ShaderMaterial | undefined;
+        if (m?.uniforms?.uLevel) water = `water: visible=${o.visible && (o.parent?.visible ?? true)} y=${o.parent?.position.y.toFixed(2)} level=${Number(m.uniforms.uLevel.value).toFixed(2)} culled=${(o as THREE.Mesh).frustumCulled} programs=${w.__amanGL?.info.programs?.length ?? "?"}`;
+      });
+      setInfo([water, ...errs]);
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  if (process.env.NODE_ENV === "production" || info.length === 0) return null;
+  return (
+    <div className="pointer-events-none absolute left-2 bottom-2 z-30 max-w-[520px] rounded-md bg-black/70 px-2 py-1 font-mono text-[10px] leading-4 text-[#ffb3ae]">
+      {info.map((l, i) => (
+        <div key={i}>{l}</div>
+      ))}
     </div>
   );
 }
@@ -48,6 +83,7 @@ export default function DigitalTwin({ className, hud = "full", interactive = tru
         </Suspense>
       </Canvas>
       <Loader />
+      {hud === "full" && <DevDiagnostics />}
       {hud !== "none" && <TwinHUD compact={hud === "compact"} />}
     </div>
   );

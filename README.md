@@ -94,20 +94,21 @@ npm run build && npm start
 
 ## Rebuilding the 3D twin in Blender
 
-The district, vehicles, water and flood progression are generated procedurally by `blender/build_district.py` (Blender 4.2+ / 5.x). In Blender's Python console or a Text Editor:
+The district is generated procedurally (Blender 4.2+ / 5.x) by `blender/build_district.py`, which loads `blender/lib_mesh.py` (mesh builder, facade frames, materials), `blender/gen_buildings.py` (arcaded residences with recessed windows and balconies, curved and slab glass towers, Emirati villas with wind towers, the mosque complex, the medical centre) and `blender/gen_streets.py` (boulevards with landscaped medians, the sunken underpass, signals, lamps, palms, the Corniche waterfront, vehicles and pedestrians). The underpass water level and the spreading puddles are keyframed in Blender. In Blender's Python console or a Text Editor:
 
 ```python
 exec(compile(open(r"<repo>/blender/build_district.py").read(), "build_district.py", "exec"))
 ```
 
-Then export with `File → Export → glTF 2.0` (GLB, *Animation mode: Scene*) to `public/models/district.glb`, or run the export snippet used during development:
+Then export with `File → Export → glTF 2.0` (GLB, *Animation mode: Scene*, Draco compression on) to `public/models/district.glb`, or run the export snippet used during development:
 
 ```python
 bpy.ops.export_scene.gltf(filepath="public/models/district.glb", export_format="GLB", export_apply=True,
-                          export_animations=True, export_animation_mode="SCENE", export_yup=True)
+                          export_animations=True, export_animation_mode="SCENE", export_yup=True,
+                          export_draco_mesh_compression_enable=True)
 ```
 
-The web twin scrubs the Blender animation (water level, spreading puddles) from the simulation state, overlays hazard polygons, verified routes and live labels, drives vehicles along engine-computed paths, and renders the variable-message sign from the same verified statement as every other channel.
+The Draco decoder is served from `public/draco/` (copied from three.js). The web twin scrubs the Blender animation from the simulation state, renders the flood as a planar-reflective surface with rain-ripple normals, depth tint and rain rings, adds a sea shader, sky-driven environment reflections and post-processing (ambient occlusion, bloom, anti-aliasing), overlays hazard polygons, verified routes and live labels, drives vehicles along engine-computed paths, and renders the variable-message sign from the same verified statement as every other channel.
 
 ## Data, privacy and ethics
 

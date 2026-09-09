@@ -2,7 +2,7 @@
 
 import { Environment } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useSim } from "@/lib/simulation/store";
 import { overcast } from "@/lib/simulation/visual";
@@ -30,11 +30,23 @@ const FRAG = /* glsl */ `
   }
 `;
 
+/** Dome materials register here so the frame loop can update scalar uniforms on the live material instances. */
+const DOME_MATERIALS = new Set<THREE.ShaderMaterial>();
+
 function SkyDome({ uniforms, scale = 1400 }: { uniforms: Record<string, { value: unknown }>; scale?: number }) {
+  const ref = useRef<THREE.ShaderMaterial>(null);
+  useEffect(() => {
+    const m = ref.current;
+    if (!m) return;
+    DOME_MATERIALS.add(m);
+    return () => {
+      DOME_MATERIALS.delete(m);
+    };
+  }, []);
   return (
     <mesh scale={scale}>
       <sphereGeometry args={[1, 32, 16]} />
-      <shaderMaterial vertexShader={VERT} fragmentShader={FRAG} uniforms={uniforms} side={THREE.BackSide} depthWrite={false} fog={false} />
+      <shaderMaterial ref={ref} vertexShader={VERT} fragmentShader={FRAG} uniforms={uniforms} side={THREE.BackSide} depthWrite={false} fog={false} />
     </mesh>
   );
 }
@@ -55,7 +67,11 @@ export function SkyAndLights() {
     const o = overcast(step, t);
     SKY.top.copy(CLEAR.top).lerp(STORM.top, o);
     SKY.horizon.copy(CLEAR.horizon).lerp(STORM.horizon, o);
-    uniforms.uSunGlow.value = 0.35 * (1 - o);
+    for (const m of DOME_MATERIALS) {
+      (m.uniforms.uTop.value as THREE.Color).copy(SKY.top);
+      (m.uniforms.uHorizon.value as THREE.Color).copy(SKY.horizon);
+      m.uniforms.uSunGlow.value = 0.35 * (1 - o);
+    }
     fog.color.copy(SKY.horizon);
     fog.near = THREE.MathUtils.lerp(340, 190, o);
     fog.far = THREE.MathUtils.lerp(980, 600, o);

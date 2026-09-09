@@ -36,9 +36,16 @@ def M(n):
 # ----------------------------------------------------------------------------
 
 def build_ground(coll):
+    """Ground plane with the sunken underpass left open (otherwise it would cap the trough at street level)."""
     mb = MB()
     e = EXTENT + 40
-    mb.quad((-e, -81, 0), (e, -81, 0), (e, e, 0), (-e, e, 0), M('Ground_Sand'))
+    hw = ROAD_W_MAIN / 2
+    x0, x1 = DIP_START - 3, DIP_END + 3
+    g = M('Ground_Sand')
+    mb.quad((-e, hw, 0), (e, hw, 0), (e, e, 0), (-e, e, 0), g)          # north of Al Majaz Road
+    mb.quad((-e, -81, 0), (e, -81, 0), (e, -hw, 0), (-e, -hw, 0), g)    # south of Al Majaz Road
+    mb.quad((-e, -hw, 0), (x0, -hw, 0), (x0, hw, 0), (-e, hw, 0), g)    # under the road, west of the dip
+    mb.quad((x1, -hw, 0), (e, -hw, 0), (e, hw, 0), (x1, hw, 0), g)      # under the road, east of the dip
     mb.build('Ground', coll)
     b = MB()
     b.box(0, -84.5, -0.12, 2 * e, 7, 0.12, M('Beach'))
