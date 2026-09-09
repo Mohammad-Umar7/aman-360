@@ -77,7 +77,7 @@ export function Ring({ value, size = 76, stroke = 6, tone = "teal", label, sub }
   const color = { neutral: "#6f7e94", brand: "#4f8df7", teal: "#2bb8a6", violet: "#9b8cff", safe: "#34c77b", warn: "#f2b544", alert: "#f0554f", info: "#5aa9ff" }[tone];
   return (
     <div className="flex items-center gap-3">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 -rotate-90">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0">
         <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(148,163,184,0.12)" strokeWidth={stroke} fill="none" />
         <circle
           cx={size / 2}
@@ -89,9 +89,10 @@ export function Ring({ value, size = 76, stroke = 6, tone = "teal", label, sub }
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - Math.max(0, Math.min(1, v)))}
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
           style={{ transition: "stroke-dashoffset 0.6s ease-out" }}
         />
-        <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" className="rotate-90 origin-center" fill="#e8eef7" fontSize={size * 0.22} fontWeight={600} style={{ transform: "rotate(90deg)", transformOrigin: "center" }}>
+        <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fill="#e8eef7" fontSize={size * 0.21} fontWeight={600} className="num">
           {Math.round(v * 100)}%
         </text>
       </svg>

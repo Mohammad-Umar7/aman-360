@@ -6,7 +6,7 @@ import { buildScenario } from "@/lib/simulation/scenario";
 import { LAST_STEP, STEPS } from "@/lib/simulation/steps";
 import type { Lang, ScenarioState } from "@/lib/types";
 
-export type CameraPreset = "overview" | "underpass" | "residence" | "hospital" | "follow";
+export type CameraPreset = "auto" | "overview" | "underpass" | "closure" | "impact" | "residence" | "hospital" | "follow";
 
 interface SimStore {
   step: number;
@@ -36,7 +36,7 @@ export const useSim = create<SimStore>((set, get) => ({
   playing: false,
   lang: "en",
   selectedPersonId: null,
-  camera: "overview",
+  camera: "auto",
   started: false,
   setStep: (n) => set({ step: Math.max(0, Math.min(LAST_STEP, n)), t: 0, started: n > 0 || get().started }),
   next: () => {
