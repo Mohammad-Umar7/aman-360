@@ -33,7 +33,7 @@ const FRAG = /* glsl */ `
 /** Dome materials register here so the frame loop can update scalar uniforms on the live material instances. */
 const DOME_MATERIALS = new Set<THREE.ShaderMaterial>();
 
-function SkyDome({ uniforms, scale = 1400 }: { uniforms: Record<string, { value: unknown }>; scale?: number }) {
+function SkyDome({ uniforms, scale = 2300 }: { uniforms: Record<string, { value: unknown }>; scale?: number }) {
   const ref = useRef<THREE.ShaderMaterial>(null);
   useEffect(() => {
     const m = ref.current;

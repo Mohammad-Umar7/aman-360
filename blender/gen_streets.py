@@ -48,12 +48,17 @@ def build_ground(coll):
     mb.quad((x1, -hw, 0), (e, -hw, 0), (e, hw, 0), (x1, hw, 0), g)      # under the road, east of the dip
     mb.build('Ground', coll)
     b = MB()
-    b.box(0, -84.5, -0.12, 2 * e, 7, 0.12, M('Beach'))
+    # sloping beach that continues under water, so the waterline emerges from the sand naturally
+    profile = [(-81.0, 0.02), (-84.0, -0.1), (-88.0, -0.3), (-92.0, -0.8), (-96.0, -1.6), (-110.0, -4.0), (-140.0, -8.0), (-200.0, -14.0), (-260.0, -18.0)]
+    rings = [[(-e, y, z), (e, y, z)] for (y, z) in profile]
+    for i in range(len(rings) - 1):
+        (a0, a1), (b0, b1) = rings[i], rings[i + 1]
+        b.quad(a0, a1, b1, b0, M('Beach'))
     b.box(0, -76, 0, 2 * e, 10, 0.16, M('Paving'))          # promenade
     b.box(0, -80.8, 0, 2 * e, 0.8, 1.0, M('Concrete'))      # sea wall
     b.build('Promenade', coll)
     s = MB()
-    s.quad((-e, -200, -0.35), (e, -200, -0.35), (e, -88, -0.35), (-e, -88, -0.35), M('Sea'))
+    s.quad((-e, -260, -0.35), (e, -260, -0.35), (e, -86, -0.35), (-e, -86, -0.35), M('Sea'))
     s.build('Sea', coll)
 
 
@@ -475,7 +480,7 @@ def build_props(coll):
     cb.box(px, -96, 0.35, 6.0, 32, 0.4, M('Paving'))
     for y in range(-84, -112, -6):
         for dx in (-2.4, 2.4):
-            cb.cyl(px + dx, y, -0.4, 0.3, 0.3, 0.8, M('Concrete'), segs=8)
+            cb.cyl(px + dx, y, -5.0, 0.3, 0.3, 5.4, M('Concrete'), segs=8)
     for dx in (-2.9, 2.9):
         for k in range(18):
             cb.box(px + dx, -82 - k * 1.7, 0.75, 0.06, 0.06, 1.0, M('Metal_Dark'))

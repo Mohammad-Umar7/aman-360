@@ -6,7 +6,7 @@ import { buildScenario } from "@/lib/simulation/scenario";
 import { LAST_STEP, STEPS } from "@/lib/simulation/steps";
 import type { Lang, ScenarioState } from "@/lib/types";
 
-export type CameraPreset = "auto" | "overview" | "underpass" | "closure" | "impact" | "residence" | "hospital" | "follow";
+export type CameraPreset = "auto" | "overview" | "underpass" | "closure" | "impact" | "residence" | "hospital" | "corniche" | "follow";
 
 interface SimStore {
   step: number;

@@ -54,6 +54,7 @@ const CAMS: { value: CameraPreset; label: string }[] = [
   { value: "underpass", label: "Underpass" },
   { value: "residence", label: "Residences" },
   { value: "hospital", label: "Hospital" },
+  { value: "corniche", label: "Corniche" },
   { value: "follow", label: "Follow" },
 ];
 

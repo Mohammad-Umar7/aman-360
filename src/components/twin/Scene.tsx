@@ -60,13 +60,18 @@ export function Scene({ interactive, compact, cameraMode, labels }: { interactiv
         <planeGeometry args={[2800, 1240]} />
         <meshStandardMaterial color="#cbbfa6" roughness={1} />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} position={[-800, -0.1, 90]} receiveShadow>
-        <planeGeometry args={[1200, 560]} />
+      <mesh rotation-x={-Math.PI / 2} position={[-800, -0.1, -51]} receiveShadow>
+        <planeGeometry args={[1200, 278]} />
         <meshStandardMaterial color="#cbbfa6" roughness={1} />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} position={[800, -0.1, 90]} receiveShadow>
-        <planeGeometry args={[1200, 560]} />
+      <mesh rotation-x={-Math.PI / 2} position={[800, -0.1, -51]} receiveShadow>
+        <planeGeometry args={[1200, 278]} />
         <meshStandardMaterial color="#cbbfa6" roughness={1} />
+      </mesh>
+      {/* sea bed beyond the modelled beach so nothing shows through the water at the district's edges */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, -16, 1100]}>
+        <planeGeometry args={[3400, 2100]} />
+        <meshStandardMaterial color="#7d7255" roughness={1} />
       </mesh>
       <EffectComposer multisampling={0} enableNormalPass={false}>
         <N8AO aoRadius={5} intensity={2.2} distanceFalloff={1.2} quality="medium" halfRes color="#0a0f18" />

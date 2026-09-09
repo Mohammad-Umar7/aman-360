@@ -35,6 +35,7 @@ export const CAMERA_PRESETS: Record<string, CamPose> = {
   closure: { pos: [44, 9, 19], target: [-24, -1, -2] },
   residence: { pos: [-52, 34, 78], target: [-4, 12, -12] },
   hospital: { pos: [52, 42, 108], target: [104, 10, 30] },
+  corniche: { pos: [-110, 30, 150], target: [20, 6, 70] },
 };
 
 export const ZONE_BUILDINGS = BUILDINGS.filter((b) => ["Bldg_Fatima", "Bldg_Yusuf", "Bldg_Sara", "Bldg_S2"].includes(b.id)).map((b) => b.id);

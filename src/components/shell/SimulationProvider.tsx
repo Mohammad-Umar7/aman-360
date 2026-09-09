@@ -13,7 +13,7 @@ export function SimulationProvider({ children }: { children: React.ReactNode }) 
     const step = sp.get("step");
     if (step !== null && /^[0-8]$/.test(step)) s.setStep(Number(step));
     const cam = sp.get("cam");
-    if (cam && ["auto", "overview", "underpass", "closure", "impact", "residence", "hospital", "follow"].includes(cam)) s.setCamera(cam as Parameters<typeof s.setCamera>[0]);
+    if (cam && ["auto", "overview", "underpass", "closure", "impact", "residence", "hospital", "corniche", "follow"].includes(cam)) s.setCamera(cam as Parameters<typeof s.setCamera>[0]);
     if (sp.get("play") === "1") s.play();
   }, []);
   useEffect(() => {
