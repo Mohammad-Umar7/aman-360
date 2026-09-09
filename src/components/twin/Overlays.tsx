@@ -84,8 +84,8 @@ function HazardZone() {
   const fenceMat = useRef<THREE.MeshBasicMaterial>(null);
   const group = useRef<THREE.Group>(null);
   useFrame((st) => {
-    const { step, t } = useSim.getState();
-    const on = hazardVisible(step, t);
+    const { step, t, layers } = useSim.getState();
+    const on = hazardVisible(step, t) && layers.hazard;
     if (group.current) group.current.visible = on;
     const pulse = 0.5 + 0.5 * Math.sin(st.clock.getElapsedTime() * 1.6);
     if (fill.current) fill.current.opacity = 0.05 + 0.03 * pulse;
@@ -313,18 +313,19 @@ function OverlayLayer({ children }: { children: React.ReactNode }) {
 }
 
 export function Overlays({ compact, labels = true }: { compact?: boolean; labels?: boolean }) {
+  const layers = useSim((s) => s.layers);
   return (
     <>
       <OverlayLayer>
         <HazardZone />
-        <Routes />
-        <HelpBeacon />
-        {labels && <AssemblyMarkers />}
+        {layers.routes && <Routes />}
+        {layers.people && <HelpBeacon />}
+        {labels && layers.people && <AssemblyMarkers />}
       </OverlayLayer>
-      {labels && <ClosureLabel />}
-      {labels && <PeopleLabels compact={compact} />}
-      {labels && <AmbulanceLabel />}
-      {labels && !compact && <VmsLabel />}
+      {labels && layers.hazard && <ClosureLabel />}
+      {labels && layers.people && <PeopleLabels compact={compact} />}
+      {labels && layers.units && <AmbulanceLabel />}
+      {labels && !compact && layers.sensors && <VmsLabel />}
     </>
   );
 }

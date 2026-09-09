@@ -61,12 +61,22 @@ export function SkyAndLights() {
     [],
   );
   const fog = useMemo(() => new THREE.Fog(CLEAR.horizon.clone(), 340, 980), []);
+  const flash = useRef(0);
+  const nextFlash = useRef(6);
 
-  useFrame(() => {
+  useFrame((st, dt) => {
     const { step, t } = useSim.getState();
     const o = overcast(step, t);
-    SKY.top.copy(CLEAR.top).lerp(STORM.top, o);
-    SKY.horizon.copy(CLEAR.horizon).lerp(STORM.horizon, o);
+    // lightning during the storm: rare, sharp, quickly decaying
+    const time = st.clock.getElapsedTime();
+    if (o > 0.6 && time > nextFlash.current) {
+      flash.current = 1;
+      nextFlash.current = time + 7 + Math.random() * 12;
+    }
+    flash.current *= Math.exp(-dt * 8);
+    const f = flash.current;
+    SKY.top.copy(CLEAR.top).lerp(STORM.top, o).lerp(new THREE.Color("#e9eef8"), f * 0.7);
+    SKY.horizon.copy(CLEAR.horizon).lerp(STORM.horizon, o).lerp(new THREE.Color("#ffffff"), f * 0.6);
     for (const m of DOME_MATERIALS) {
       (m.uniforms.uTop.value as THREE.Color).copy(SKY.top);
       (m.uniforms.uHorizon.value as THREE.Color).copy(SKY.horizon);
@@ -77,11 +87,11 @@ export function SkyAndLights() {
     fog.far = THREE.MathUtils.lerp(980, 600, o);
     if (scene.fog !== fog) scene.fog = fog;
     if (sun.current) {
-      sun.current.intensity = THREE.MathUtils.lerp(CLEAR.sunI, STORM.sunI, o);
+      sun.current.intensity = THREE.MathUtils.lerp(CLEAR.sunI, STORM.sunI, o) + f * 5;
       sun.current.color.copy(CLEAR.sun).lerp(STORM.sun, o);
     }
-    if (hemi.current) hemi.current.intensity = THREE.MathUtils.lerp(CLEAR.hemiI, STORM.hemiI, o);
-    if (amb.current) amb.current.intensity = THREE.MathUtils.lerp(CLEAR.ambI, STORM.ambI, o);
+    if (hemi.current) hemi.current.intensity = THREE.MathUtils.lerp(CLEAR.hemiI, STORM.hemiI, o) + f * 2.5;
+    if (amb.current) amb.current.intensity = THREE.MathUtils.lerp(CLEAR.ambI, STORM.ambI, o) + f * 1.5;
   });
 
   return (

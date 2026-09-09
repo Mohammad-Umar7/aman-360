@@ -75,7 +75,7 @@ export default function DigitalTwin({ className, hud = "full", interactive = tru
         shadows
         dpr={[1, 1.75]}
         gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05, outputColorSpace: THREE.SRGBColorSpace, powerPreference: "high-performance" }}
-        camera={{ fov: 42, near: 0.5, far: 2500, position: [-150, 92, 200] }}
+        camera={{ fov: 42, near: 0.5, far: 9000, position: [-150, 92, 200] }}
         style={{ position: "absolute", inset: 0 }}
       >
         <Suspense fallback={null}>

@@ -197,6 +197,7 @@ def build_all():
     residential_v2('Bldg_E2', c_bld, 138, -34, 14, 14, 6, 'sand', arcade=(), balconies=('-x',))
 
     build_vehicles(c_veh)
+    build_life(c_veh, c_env)
     build_water(c_wat)
     build_lighting_and_cameras(c_cam)
 

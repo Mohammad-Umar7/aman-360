@@ -488,11 +488,6 @@ def build_props(coll):
     cb.box(px, -108, 0.75, 4.6, 4.6, 3.0, M('Facade_White'))
     cb.box(px, -108, 3.75, 5.2, 5.2, 0.3, M('Trim'))
     cb.dome(px, -108, 4.05, 2.0, M('Trim'), segs=20)
-    # boats
-    for (bxx, byy, yaw) in ((-26, -98, 0.3), (-16, -104, -0.4), (12, -96, 1.2)):
-        hull = [(-3.0, -1.0), (2.0, -1.0), (3.4, 0.0), (2.0, 1.0), (-3.0, 1.0)]
-        cb.prism(hull, -0.45, 1.0, M('Boat'), cx=bxx, cy=byy, yaw=yaw)
-        cb.boxc(bxx - 0.5 * math.cos(yaw), byy - 0.5 * math.sin(yaw), 0.95, 1.8, 1.4, 0.8, M('Boat_Trim'), yaw=yaw)
     # breakwater rocks
     for k in range(34):
         rx = RND.uniform(96, 150)
@@ -705,3 +700,99 @@ def build_people(coll):
     for (x, y, yaw, f) in spots:
         person(mb, x, y, yaw, female=f, z0=(0.16 if y < -70 else SIDEWALK_H))
     mb.build('People', coll)
+
+
+# ----------------------------------------------------------------------------
+# Life: separately named objects the web twin animates (built at the origin)
+# ----------------------------------------------------------------------------
+
+def helicopter(coll):
+    mb = MB()
+    wm, rm = M('Hospital_White'), M('Hospital_Red')
+    mb.lathe([(0.0, 0), (0.7, 0.4), (1.0, 1.2), (1.05, 2.2), (0.85, 3.0), (0.3, 3.4), (0.0, 3.5)], 0, 0, 0.0, wm, segs=14)  # placeholder, replaced below
+    mb = MB()
+    # fuselage (box-based, nose to +x), skids, tail boom, fin, red livery band
+    mb.boxc(0.0, 0, 1.6, 5.2, 2.0, 1.7, wm)
+    mb.boxc(2.75, 0, 1.55, 1.2, 1.7, 1.3, M('Glass_Dark'), pitch=math.radians(18))
+    mb.boxc(0.4, 0, 1.6, 4.6, 2.05, 0.3, rm)
+    mb.boxc(-4.2, 0, 2.1, 4.4, 0.5, 0.5, wm)
+    mb.boxc(-6.2, 0, 2.9, 0.9, 0.16, 1.5, rm)
+    mb.boxc(-6.2, 0, 2.2, 0.9, 1.8, 0.14, wm)
+    for s in (-1, 1):
+        mb.boxc(0.2, s * 1.1, 0.35, 4.4, 0.12, 0.12, M('Metal_Grey'))
+        for ox in (-1.2, 1.4):
+            mb.boxc(ox, s * 1.1, 0.75, 0.1, 0.1, 0.8, M('Metal_Grey'))
+        mb.boxc(0.3, s * 1.03, 1.65, 1.3, 0.04, 0.5, M('Glass_Dark'))
+    mb.boxc(0.0, 0, 2.55, 0.9, 0.9, 0.35, M('Metal_Dark'))
+    body = mb.build('Helicopter', coll)
+    rt = MB()
+    rt.cyl(0, 0, 0.0, 0.22, 0.22, 0.3, M('Metal_Dark'), segs=10)
+    for k in range(4):
+        rt.boxc(0, 0, 0.18, 5.6, 0.3, 0.06, M('Metal_Dark'), yaw=k * math.pi / 4)
+    rotor = rt.build('Rotor', coll)
+    rotor.parent = body
+    rotor.location = (0.0, 0.0, 2.72)
+    tr = MB()
+    for k in range(2):
+        tr.boxc(0, 0, 0, 1.3, 0.05, 0.16, M('Metal_Dark'), pitch=k * math.pi / 2)
+    trot = tr.build('Tail_Rotor', coll)
+    trot.parent = body
+    trot.location = (-6.2, 0.14, 2.9)
+    return body
+
+
+def flagpole(coll, x, y):
+    pm = MB()
+    pm.lathe([(0.9, 0), (0.9, 0.5), (0.5, 0.8), (0.32, 20), (0.2, 44), (0.35, 44.3), (0.0, 45)], x, y, 0.16, M('Mullion_Light'), segs=12)
+    pm.lathe([(0.0, 0), (0.45, 0.3), (0.0, 0.8)], x, y, 45.0, M('Gold'), segs=10)
+    pm.build('Flagpole', coll)
+    # flag: cell grid (hoist at the pole, flies toward +x); web waves the vertices
+    mat('Flag_Red', '#C8102E', rough=0.8); mat('Flag_Green', '#00843D', rough=0.8); mat('Flag_White', '#F4F4F4', rough=0.8); mat('Flag_Black', '#111111', rough=0.8)
+    fm = MB()
+    W, H, cols, rows = 14.0, 7.0, 14, 6
+    for i in range(cols):
+        for j in range(rows):
+            x0, x1 = i * W / cols, (i + 1) * W / cols
+            z0, z1 = j * H / rows, (j + 1) * H / rows
+            m = M('Flag_Red') if i < 4 else (M('Flag_Green') if j >= 4 else (M('Flag_White') if j >= 2 else M('Flag_Black')))
+            fm.quad((x0, 0, z0), (x1, 0, z0), (x1, 0, z1), (x0, 0, z1), m)
+    flag = fm.build('Flag', coll, location=(x + 0.35, y, 37.5))
+    return flag
+
+
+def cell_tower(coll, x, y):
+    mb = MB()
+    pm = M('Metal_Grey')
+    mb.box(x, y, SIDEWALK_H, 3.2, 3.2, 0.5, M('Concrete'))
+    mb.lathe([(0.45, 0), (0.42, 14), (0.3, 30), (0.3, 32)], x, y, SIDEWALK_H + 0.5, pm, segs=10)
+    for k in range(3):
+        a = 2 * math.pi * k / 3
+        mb.boxc(x + 1.4 * math.cos(a), y + 1.4 * math.sin(a), SIDEWALK_H + 28.5, 0.35, 0.9, 2.6, M('Facade_Grey'), yaw=a)
+        mb.boxc(x + 0.7 * math.cos(a), y + 0.7 * math.sin(a), SIDEWALK_H + 28.5, 1.4, 0.08, 0.08, pm, yaw=a)
+    mb.lathe([(0.0, 0), (0.9, 0.25), (1.0, 0.4)], x + 0.9, y, SIDEWALK_H + 22.0, M('Trim'), segs=12)
+    mb.boxc(x, y, SIDEWALK_H + 32.3, 0.12, 0.12, 1.6, pm)
+    mb.build('Cell_Tower', coll)
+
+
+def build_life(c_veh, c_env):
+    def one(name, fn, *a, **k):
+        mb = MB()
+        fn(mb, 0, 0, 0.0, *a, **k)
+        return mb.build(name, c_veh)
+    one('Car_Traffic_4', sedan, M('Car_Red'), z0=0.0).location = (0, -200, ROAD_Z)
+    one('Car_Traffic_5', suv, M('Car_Grey'), z0=0.0).location = (0, -200, ROAD_Z)
+    one('Car_Traffic_6', sedan, M('Car_Beige'), z0=0.0, taxi=True).location = (0, -200, ROAD_Z)
+    cd = MB(); suv(cd, 0, 0, 0.0, M('Hospital_Red'), z0=0.0, police=True); cd.build('CD_Unit', c_veh).location = (-96, -67.6, ROAD_Z)
+    heli = helicopter(c_veh)
+    heli.location = (300, -160, 90)
+    for i in range(6):
+        w = MB(); person(w, 0, 0, 0.0, female=(i % 2 == 1), z0=0.0); w.build(f'Walker_{i + 1}', c_env).location = (-140 + i * 20, -76, 0.16)
+    for i, (bxx, byy) in enumerate(((-26, -98), (-16, -104), (12, -96))):
+        bm = MB()
+        hull = [(-3.0, -1.0), (2.0, -1.0), (3.4, 0.0), (2.0, 1.0), (-3.0, 1.0)]
+        bm.prism(hull, -0.45, 1.0, M('Boat'))
+        bm.boxc(-0.5, 0, 0.95, 1.8, 1.4, 0.8, M('Boat_Trim'))
+        bm.boxc(1.6, 0, 0.62, 0.9, 1.6, 0.12, M('Bench'))
+        bm.build(f'Boat_{i + 1}', c_env).location = (bxx, byy, -0.3)
+    flagpole(c_env, 146, -76)
+    cell_tower(c_env, 84, -52)

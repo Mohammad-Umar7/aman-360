@@ -1,13 +1,66 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { Camera, Info } from "lucide-react";
+import { Camera, CloudRain, Info, Layers, Radio, Waves, Wind } from "lucide-react";
+import { useState } from "react";
 import { Segmented } from "@/components/ui/Misc";
 import { LayerTag } from "@/components/ui/Badge";
 import { PersonDrawer } from "@/components/population/PersonDrawer";
 import { fmtInt } from "@/lib/format";
-import { useScenario, useSim, type CameraPreset } from "@/lib/simulation/store";
+import { TWIN_LAYERS, useScenario, useSim, type CameraPreset } from "@/lib/simulation/store";
+import { floodLevel, overcast, rainIntensity } from "@/lib/simulation/visual";
 import { cn } from "@/lib/utils";
+
+/** Live environment readings derived from the simulation state (synthetic sensors). */
+function EnvironmentPanel() {
+  const step = useSim((s) => s.step);
+  const t = useSim((s) => Math.round(s.t * 20) / 20);
+  const rain = rainIntensity(step, t);
+  const level = Math.max(0, -0.15 + floodLevel(step, t) * 2.2);
+  const wind = Math.round(14 + 22 * overcast(step, t));
+  const pump = level > 1.4 ? "overwhelmed" : level > 0.5 ? "at capacity" : "nominal";
+  const rows = [
+    { icon: CloudRain, label: "Rainfall", value: `${Math.round(rain * 52 + (step >= 1 ? 6 : 0))} mm/h`, tone: rain > 0.7 ? "text-[#ffd27a]" : "text-ink" },
+    { icon: Wind, label: "Wind", value: `${wind} km/h NW`, tone: "text-ink" },
+    { icon: Waves, label: "UP-07 water level", value: `${level.toFixed(1)} m`, tone: level > 1.4 ? "text-[#ff9b96]" : level > 0.5 ? "text-[#ffd27a]" : "text-ink" },
+    { icon: Radio, label: "Drainage pump", value: pump, tone: pump === "nominal" ? "text-[#7fe0a8]" : pump === "at capacity" ? "text-[#ffd27a]" : "text-[#ff9b96]" },
+  ];
+  return (
+    <div className="glass rounded-lg px-3 py-2 w-[210px]">
+      <div className="eyebrow mb-1.5">Environment · live</div>
+      {rows.map((r) => (
+        <div key={r.label} className="flex items-center gap-2 py-0.5 text-[11.5px]">
+          <r.icon size={12} className="text-ink-3 shrink-0" />
+          <span className="text-ink-3 flex-1 truncate">{r.label}</span>
+          <span className={cn("num font-medium", r.tone)}>{r.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LayersMenu() {
+  const [open, setOpen] = useState(false);
+  const layers = useSim((s) => s.layers);
+  const toggle = useSim((s) => s.toggleLayer);
+  return (
+    <div className="relative">
+      <button onClick={() => setOpen((o) => !o)} className={cn("glass rounded-lg h-8 px-2.5 flex items-center gap-1.5 text-[12px] text-ink-2 hover:text-ink", open && "text-ink")}>
+        <Layers size={13} /> Layers
+      </button>
+      {open && (
+        <div className="absolute right-0 top-9 glass rounded-lg p-2 w-[200px] z-20">
+          {TWIN_LAYERS.map((l) => (
+            <label key={l.id} className="flex items-center gap-2 px-1.5 py-1 text-[12px] text-ink-2 hover:text-ink cursor-pointer">
+              <input type="checkbox" checked={layers[l.id]} onChange={() => toggle(l.id)} className="accent-[#4f8df7]" />
+              {l.label}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function caption(step: number, t: number): { title: string; sub: string } {
   switch (step) {
@@ -76,11 +129,15 @@ export function TwinHUD({ compact }: { compact?: boolean }) {
               <Caption />
             </div>
           )}
-          <div className="pointer-events-auto flex items-center gap-2">
-            <div className="glass rounded-lg px-2 py-1 flex items-center gap-2">
-              <Camera size={13} className="text-ink-3" />
-              <Segmented size="xs" value={camera} onChange={setCamera} options={compact ? CAMS.filter((c) => ["auto", "overview", "follow"].includes(c.value)) : CAMS} />
+          <div className="pointer-events-auto flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2">
+              <div className="glass rounded-lg px-2 py-1 flex items-center gap-2">
+                <Camera size={13} className="text-ink-3" />
+                <Segmented size="xs" value={camera} onChange={setCamera} options={compact ? CAMS.filter((c) => ["auto", "overview", "follow"].includes(c.value)) : CAMS} />
+              </div>
+              {!compact && <LayersMenu />}
             </div>
+            {!compact && <EnvironmentPanel />}
           </div>
         </div>
 

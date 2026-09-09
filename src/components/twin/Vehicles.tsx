@@ -72,6 +72,7 @@ export function Vehicles() {
     place(carRef.current, a.path, a.progress);
     const b = ambulanceVehicle(step, t);
     place(ambRef.current, b.path, b.progress);
+    if (ambRef.current) ambRef.current.visible = useSim.getState().layers.units;
     const time = st.clock.getElapsedTime();
     const active = step >= 7 && b.progress < 1;
     lights.current.forEach((m, i) => {

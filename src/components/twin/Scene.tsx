@@ -3,9 +3,11 @@
 import { Bloom, EffectComposer, N8AO, SMAA, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { useThree } from "@react-three/fiber";
 import { ToneMappingMode } from "postprocessing";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import * as THREE from "three";
 import { CameraRig } from "@/components/twin/CameraRig";
 import { District } from "@/components/twin/District";
+import { Life } from "@/components/twin/Life";
 import { Overlays } from "@/components/twin/Overlays";
 import { Rain } from "@/components/twin/Rain";
 import { Sea } from "@/components/twin/Sea";
@@ -42,6 +44,33 @@ function FrameHook() {
   return null;
 }
 
+/** The sloping shore continues east and west of the modelled district so the coastline never shows a step. */
+function ShoreBeyondDistrict() {
+  const geo = useMemo(() => {
+    const profile: [number, number][] = [[81, 0.02], [84, -0.1], [88, -0.3], [92, -0.8], [96, -1.6], [110, -4], [140, -8], [200, -14], [260, -18]];
+    const pos: number[] = [];
+    for (const [x0, x1] of [
+      [-1600, -190],
+      [190, 1600],
+    ]) {
+      for (let i = 0; i < profile.length - 1; i++) {
+        const [za, ya] = profile[i];
+        const [zb, yb] = profile[i + 1];
+        pos.push(x0, ya, za, x1, ya, za, x1, yb, zb, x0, ya, za, x1, yb, zb, x0, yb, zb);
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    g.computeVertexNormals();
+    return g;
+  }, []);
+  return (
+    <mesh geometry={geo} receiveShadow>
+      <meshStandardMaterial color="#e2d3b1" roughness={0.95} side={THREE.DoubleSide} />
+    </mesh>
+  );
+}
+
 export function Scene({ interactive, compact, cameraMode, labels }: { interactive: boolean; compact: boolean; cameraMode?: "orbit"; labels: boolean }) {
   return (
     <>
@@ -52,9 +81,11 @@ export function Scene({ interactive, compact, cameraMode, labels }: { interactiv
       <Sea />
       <Rain />
       <Vehicles />
+      <Life labels={labels} />
       <Signage />
       <Overlays compact={compact} labels={labels} />
       <CameraRig interactive={interactive} mode={cameraMode} />
+      <ShoreBeyondDistrict />
       {/* ground beyond the modelled district (kept clear of the district itself so it never caps the underpass) */}
       <mesh rotation-x={-Math.PI / 2} position={[0, -0.1, -800]} receiveShadow>
         <planeGeometry args={[2800, 1240]} />

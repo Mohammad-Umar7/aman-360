@@ -101,6 +101,41 @@ export function ambulanceVehicle(step: number, t: number): VehicleState {
   return { path: AMBULANCE_PATH, progress: 1, visible: true, rerouted: false };
 }
 
+/** Civil Defence unit CD-3: Corniche Street eastbound → Corniche View forecourt (Aisha). */
+export const CD_PATH: Point[] = [
+  { x: -146, y: P("C1").y - LANE },
+  { x: 18, y: P("C1").y - LANE },
+  { x: 18, y: -50 },
+];
+
+export function cdVehicle(step: number, t: number): VehicleState {
+  if (step < 7) return { path: CD_PATH, progress: 0, visible: false, rerouted: false };
+  if (step === 7) return { path: CD_PATH, progress: smoothstep(clamp((t - 0.1) / 0.85, 0, 1)), visible: true, rerouted: false };
+  return { path: CD_PATH, progress: 1, visible: true, rerouted: false };
+}
+
+/** Medevac helicopter: approaches from the sea and lands on the medical-centre helipad during dispatch. */
+export interface HeliState {
+  p: Point;
+  alt: number;
+  heading: number;
+  rotor: number; // 0..1 spin speed
+  visible: boolean;
+}
+export function helicopter(step: number, t: number): HeliState {
+  const start = { x: 320, y: -190 };
+  const pad = { x: 118, y: -34 };
+  if (step < 7) return { p: start, alt: 95, heading: Math.PI, rotor: 0, visible: false };
+  if (step === 7) {
+    const u = smoothstep(clamp((t - 0.05) / 0.9, 0, 1));
+    const p = { x: lerp(start.x, pad.x, u), y: lerp(start.y, pad.y, u) };
+    const alt = lerp(95, 26.3, u * u);
+    const heading = Math.atan2(pad.y - start.y, pad.x - start.x);
+    return { p, alt, heading: lerp(heading, Math.PI * 0.75, smoothstep(clamp((u - 0.7) / 0.3, 0, 1))), rotor: 1, visible: true };
+  }
+  return { p: pad, alt: 26.3, heading: Math.PI * 0.75, rotor: lerp(1, 0.15, smoothstep(t * 2)), visible: true };
+}
+
 export const closureVisible = (step: number, t: number) => step >= 2 || (step === 1 && t > 0.75);
 export const hazardVisible = (step: number, t: number) => step >= 2 || (step === 1 && t > 0.55);
 export const policeVisible = (step: number, t: number) => step >= 2 || (step === 1 && t > 0.7);

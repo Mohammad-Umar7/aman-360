@@ -13,7 +13,11 @@ export const DISTRICT_URL = "/models/district.glb";
 export const DRACO_PATH = "/draco/";
 
 /** Objects the twin drives itself (hidden here, re-created in Vehicles/Water/Sea/Signage). */
-const DRIVEN = new Set(["Car_Ahmed", "Ambulance", "Water_Underpass", "VMS_Screen", "Car_Traffic_1", "Car_Traffic_2", "Car_Traffic_3", "Sea"]);
+const DRIVEN = new Set([
+  "Car_Ahmed", "Ambulance", "Water_Underpass", "VMS_Screen", "Sea",
+  "Car_Traffic_1", "Car_Traffic_2", "Car_Traffic_3", "Car_Traffic_4", "Car_Traffic_5", "Car_Traffic_6",
+  "CD_Unit", "Helicopter", "Flag", "Walker_1", "Walker_2", "Walker_3", "Walker_4", "Walker_5", "Walker_6", "Boat_1", "Boat_2", "Boat_3",
+]);
 const WET_MATERIALS = new Set(["Asphalt", "Plaza", "Paving", "Sidewalk", "Curb", "Ground_Sand", "Concrete", "Roof", "Marble_Warm", "Beach", "Helipad"]);
 const WARM = new THREE.Color("#ffd9a0");
 
@@ -30,6 +34,7 @@ export function District() {
   const wet = useRef<{ m: THREE.MeshStandardMaterial; rough: number; color: THREE.Color }[]>([]);
   const glass = useRef<THREE.MeshStandardMaterial[]>([]);
   const lamps = useRef<THREE.MeshStandardMaterial[]>([]);
+  const signals = useRef<Record<string, THREE.MeshStandardMaterial>>({});
   const highlight = useRef<Map<string, THREE.MeshStandardMaterial[]>>(new Map());
 
   useEffect(() => {
@@ -65,7 +70,7 @@ export function District() {
           lamps.current.push(m);
         }
         if (m.name === "Screen") m.emissiveIntensity = 0.2;
-        if (m.name === "Signal_Red") m.emissiveIntensity = 3;
+        if (m.name.startsWith("Signal_")) signals.current[m.name] = m;
       }
     });
     for (const name of DRIVEN) {
@@ -112,13 +117,21 @@ export function District() {
       g.emissiveIntensity = 0.22 * o;
     }
     for (const l of lamps.current) l.emissiveIntensity = THREE.MathUtils.lerp(0.6, 5, o);
+    // traffic signals cycle (all intersections in phase): red → green → amber
+    const phase = (st.clock.getElapsedTime() % 12) / 12;
+    const red = phase < 0.45 ? 1 : 0;
+    const green = phase >= 0.5 && phase < 0.92 ? 1 : 0;
+    const amber = (phase >= 0.45 && phase < 0.5) || phase >= 0.92 ? 1 : 0;
+    if (signals.current.Signal_Red) signals.current.Signal_Red.emissiveIntensity = 0.3 + 4 * red;
+    if (signals.current.Signal_Green) signals.current.Signal_Green.emissiveIntensity = 0.3 + 4 * green;
+    if (signals.current.Signal_Amber) signals.current.Signal_Amber.emissiveIntensity = 0.3 + 4 * amber;
     const closure = closureVisible(step, t);
     for (const name of ["Barrier_W", "Barrier_E"]) {
       const n = scene.getObjectByName(name);
       if (n) n.visible = closure;
     }
     const police = scene.getObjectByName("Police_Car");
-    if (police) police.visible = policeVisible(step, t);
+    if (police) police.visible = policeVisible(step, t) && useSim.getState().layers.units;
     const state = buildScenario(step);
     const time = st.clock.getElapsedTime();
     for (const [id, mats] of highlight.current) {

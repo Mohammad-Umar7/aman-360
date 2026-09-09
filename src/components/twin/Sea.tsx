@@ -18,14 +18,15 @@ const COMMON = /* glsl */ `
     float a = hash(i), b = hash(i + vec2(1.0, 0.0)), c = hash(i + vec2(0.0, 1.0)), d = hash(i + vec2(1.0, 1.0));
     return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
   }
-  // layered swell — no regular sine grids
+  // layered swell — no regular sine grids; damped in the shallows so waves never climb onto the shore
   float waveH(vec2 p, float t) {
     float h = 0.0;
     h += (vnoise(p * 0.035 + vec2(t * 0.05, t * 0.035)) - 0.5) * 1.1;
     h += (vnoise(p * 0.09 + vec2(-t * 0.11, t * 0.08)) - 0.5) * 0.5;
     h += (vnoise(p * 0.26 + vec2(t * 0.22, -t * 0.17)) - 0.5) * 0.2;
     h += (vnoise(p * 0.8 + vec2(-t * 0.45, t * 0.3)) - 0.5) * 0.07;
-    return h;
+    float amp = mix(0.08, 1.0, smoothstep(88.0, 125.0, p.y));
+    return h * amp;
   }
   // sea-bed profile, mirrored from the sloping beach in blender/gen_streets.py (world z = -north)
   float sandZ(float z) {

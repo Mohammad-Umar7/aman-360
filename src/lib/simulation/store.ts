@@ -8,6 +8,16 @@ import type { Lang, ScenarioState } from "@/lib/types";
 
 export type CameraPreset = "auto" | "overview" | "underpass" | "closure" | "impact" | "residence" | "hospital" | "corniche" | "follow";
 
+export type TwinLayer = "hazard" | "routes" | "people" | "units" | "sensors" | "life";
+export const TWIN_LAYERS: { id: TwinLayer; label: string }[] = [
+  { id: "hazard", label: "Hazard polygon" },
+  { id: "routes", label: "Routes" },
+  { id: "people", label: "People" },
+  { id: "units", label: "Response units" },
+  { id: "sensors", label: "Sensors & broadcast" },
+  { id: "life", label: "Traffic & activity" },
+];
+
 interface SimStore {
   step: number;
   /** progress within the current step (0..1) — drives animation only */
@@ -17,6 +27,8 @@ interface SimStore {
   selectedPersonId: string | null;
   camera: CameraPreset;
   started: boolean;
+  layers: Record<TwinLayer, boolean>;
+  toggleLayer: (l: TwinLayer) => void;
   setStep: (n: number) => void;
   next: () => void;
   prev: () => void;
@@ -38,6 +50,8 @@ export const useSim = create<SimStore>((set, get) => ({
   selectedPersonId: null,
   camera: "auto",
   started: false,
+  layers: { hazard: true, routes: true, people: true, units: true, sensors: true, life: true },
+  toggleLayer: (l) => set((s) => ({ layers: { ...s.layers, [l]: !s.layers[l] } })),
   setStep: (n) => set({ step: Math.max(0, Math.min(LAST_STEP, n)), t: 0, started: n > 0 || get().started }),
   next: () => {
     const { step } = get();
