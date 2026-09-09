@@ -5,7 +5,7 @@ import { MODEL } from "@/lib/ai/provider";
 
 export function StatusBar() {
   return (
-    <footer className="h-7 shrink-0 border-t border-line bg-bg-1/80 px-5 flex items-center gap-5 text-[10.5px] text-ink-3">
+    <footer className="h-7 shrink-0 border-t border-line bg-bg-1/80 px-5 flex items-center gap-5 text-[11px] text-ink-3">
       <span className="flex items-center gap-1.5">
         <ShieldCheck size={11} className="text-teal" /> Deterministic safety layer · rule set SOP-FF-03 v4.1
       </span>

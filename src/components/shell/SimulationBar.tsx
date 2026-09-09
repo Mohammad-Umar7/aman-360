@@ -54,7 +54,7 @@ export function SimulationBar() {
                   {state === "done" && <div className="absolute inset-0 bg-brand/70 rounded-full" />}
                   {state === "current" && <Progress />}
                 </div>
-                <div className={cn("mt-1 text-[10.5px] truncate", state === "current" ? "text-ink font-medium" : "text-ink-3")}>
+                <div className={cn("mt-1 text-[11px] truncate", state === "current" ? "text-ink font-medium" : "text-ink-3")}>
                   <span className="num text-ink-4 mr-1">{s.index}</span>
                   {s.short}
                 </div>
@@ -67,10 +67,10 @@ export function SimulationBar() {
       <div className="hidden xl:flex items-center gap-3 max-w-[420px] min-w-0">
         <LayerTag layer={meta.layer} />
         <div className="min-w-0">
-          <div className="text-[12.5px] font-medium truncate">
-            {meta.title} <span className="mono text-ink-4 text-[11px] ml-1">{tplus(meta.offsetSec)}</span>
+          <div className="text-[13px] font-medium truncate">
+            {meta.title} <span className="mono text-ink-4 text-[11.5px] ml-1">{tplus(meta.offsetSec)}</span>
           </div>
-          <div className="text-[11px] text-ink-3 truncate">{meta.caption}</div>
+          <div className="text-[11.5px] text-ink-3 truncate">{meta.caption}</div>
         </div>
       </div>
     </div>

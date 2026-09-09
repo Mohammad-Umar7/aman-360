@@ -46,10 +46,10 @@ export function KpiTile({ label, value, format = fmtInt, sub, tone = "neutral", 
       <div className={cn("absolute left-0 top-3 bottom-3 w-[3px] rounded-r", DOT[tone], tone === "neutral" && "bg-ink-4")} />
       <div className="flex items-center justify-between gap-2">
         <div className="eyebrow truncate">{label}</div>
-        {hint && <span className="text-[10px] text-ink-4 truncate">{hint}</span>}
+        {hint && <span className="text-[10.5px] text-ink-4 truncate">{hint}</span>}
       </div>
       <div className={cn("num font-semibold tracking-tight text-ink mt-1", compact ? "text-[22px] leading-7" : "text-[28px] leading-8")}>{format(v)}</div>
-      {sub && <div className="text-[11.5px] text-ink-3 mt-0.5 leading-4">{sub}</div>}
+      {sub && <div className="text-[12px] text-ink-3 mt-0.5 leading-4">{sub}</div>}
     </div>
   );
 }
@@ -58,7 +58,7 @@ export function Meter({ value, tone = "brand", className, label }: { value: numb
   return (
     <div className={cn("w-full", className)}>
       {label && (
-        <div className="flex justify-between text-[11px] text-ink-3 mb-1">
+        <div className="flex justify-between text-[11.5px] text-ink-3 mb-1">
           <span>{label}</span>
           <span className="num">{Math.round(value * 100)}%</span>
         </div>
@@ -98,8 +98,8 @@ export function Ring({ value, size = 76, stroke = 6, tone = "teal", label, sub }
       </svg>
       {(label || sub) && (
         <div className="min-w-0">
-          {label && <div className="text-[13px] font-medium text-ink leading-5">{label}</div>}
-          {sub && <div className="text-[11.5px] text-ink-3 leading-4">{sub}</div>}
+          {label && <div className="text-[13.5px] font-medium text-ink leading-5">{label}</div>}
+          {sub && <div className="text-[12px] text-ink-3 leading-4">{sub}</div>}
         </div>
       )}
     </div>

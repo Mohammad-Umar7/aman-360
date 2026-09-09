@@ -29,7 +29,7 @@ export const DOT: Record<Tone, string> = {
 
 export function Badge({ tone = "neutral", children, className, dot, pulse }: { tone?: Tone; children: ReactNode; className?: string; dot?: boolean; pulse?: boolean }) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-md border px-1.5 py-0.5 text-[11px] font-medium leading-4 whitespace-nowrap", TONES[tone], className)}>
+    <span className={cn("inline-flex items-center gap-1.5 rounded-md border px-1.5 py-0.5 text-[11.5px] font-medium leading-4 whitespace-nowrap", TONES[tone], className)}>
       {dot && (
         <span className="relative flex h-1.5 w-1.5">
           {pulse && <span className={cn("absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping", DOT[tone])} />}

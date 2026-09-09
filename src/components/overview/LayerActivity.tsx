@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 
 function Row({ label, on, count }: { label: string; on: boolean; count?: string }) {
   return (
-    <li className={cn("flex items-center justify-between text-[12px] py-1.5", on ? "text-ink" : "text-ink-4")}>
+    <li className={cn("flex items-center justify-between text-[12.5px] py-1.5", on ? "text-ink" : "text-ink-4")}>
       <span className="flex items-center gap-2">
         <span className={cn("h-1.5 w-1.5 rounded-full", on ? "bg-current" : "bg-ink-4/50")} />
         {label}
       </span>
-      {count && <span className="num text-[11px] text-ink-3">{count}</span>}
+      {count && <span className="num text-[11.5px] text-ink-3">{count}</span>}
     </li>
   );
 }
@@ -25,7 +25,7 @@ export function LayerActivity({ state, className }: { state: ScenarioState; clas
     <Panel title="Two intelligence layers" eyebrow="Architecture" className={className}>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <div className="flex items-center gap-1.5 text-[12px] font-semibold text-teal-2 mb-1">
+          <div className="flex items-center gap-1.5 text-[12.5px] font-semibold text-teal-2 mb-1">
             <ShieldCheck size={13} /> Deterministic safety
           </div>
           <ul className="divide-y divide-line">
@@ -40,7 +40,7 @@ export function LayerActivity({ state, className }: { state: ScenarioState; clas
           </ul>
         </div>
         <div>
-          <div className="flex items-center gap-1.5 text-[12px] font-semibold text-violet-2 mb-1">
+          <div className="flex items-center gap-1.5 text-[12.5px] font-semibold text-violet-2 mb-1">
             <Sparkles size={13} /> AI communication
           </div>
           <ul className="divide-y divide-line">
@@ -55,7 +55,7 @@ export function LayerActivity({ state, className }: { state: ScenarioState; clas
           </ul>
         </div>
       </div>
-      <p className="mt-3 text-[11px] text-ink-4 leading-4">The AI layer never decides who is affected or what action applies. It adapts wording, language and channels, and summarises for operators.</p>
+      <p className="mt-3 text-[11.5px] text-ink-4 leading-4">The AI layer never decides who is affected or what action applies. It adapts wording, language and channels, and summarises for operators.</p>
     </Panel>
   );
 }

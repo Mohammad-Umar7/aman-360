@@ -39,19 +39,19 @@ export function SourceCard({ source, claim, lang, contradicted, selected, onClic
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-[12.5px] font-medium truncate">{source.name}</span>
+            <span className="text-[13px] font-medium truncate">{source.name}</span>
             <Badge tone={source.authorityRank === 1 ? "teal" : source.authorityRank === 2 ? "brand" : "neutral"} className="shrink-0">
               rank {source.authorityRank}
             </Badge>
           </div>
-          <div className="text-[11px] text-ink-3 truncate">
+          <div className="text-[11.5px] text-ink-3 truncate">
             {source.org} · {source.protocol} · ~{source.latencySec}s
           </div>
           {claim ? (
             <div className="mt-2">
               <div className="flex items-center gap-2 mb-1">
                 <Badge tone={VALUE_TONE[claim.value]}>{VALUE_LABEL[claim.value]}</Badge>
-                <span className="mono text-[10.5px] text-ink-3 flex items-center gap-1">
+                <span className="mono text-[11px] text-ink-3 flex items-center gap-1">
                   <Clock size={10} /> observed {claim.observedAt}
                 </span>
                 {claim.stale && (
@@ -61,10 +61,10 @@ export function SourceCard({ source, claim, lang, contradicted, selected, onClic
                 )}
                 {contradicted && !claim.stale && <Badge tone="warn">contradicted</Badge>}
               </div>
-              {lang === "ar" ? <Arabic className="text-[12.5px] text-ink-2 leading-5">{claim.textAr}</Arabic> : <p className="text-[12px] text-ink-2 leading-4.5">{claim.text}</p>}
+              {lang === "ar" ? <Arabic className="text-[13px] text-ink-2 leading-5">{claim.textAr}</Arabic> : <p className="text-[12.5px] text-ink-2 leading-4.5">{claim.text}</p>}
             </div>
           ) : (
-            <div className="mt-2 text-[11.5px] text-ink-4">No claims received · nominal</div>
+            <div className="mt-2 text-[12px] text-ink-4">No claims received · nominal</div>
           )}
         </div>
       </div>

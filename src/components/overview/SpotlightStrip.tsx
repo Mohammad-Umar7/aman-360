@@ -22,7 +22,7 @@ export function SpotlightStrip({ people, className }: { people: PersonState[]; c
       className={className}
       padded={false}
       actions={
-        <Link href="/command/population" className="text-[11.5px] text-brand-2 hover:underline flex items-center gap-0.5">
+        <Link href="/command/population" className="text-[12px] text-brand-2 hover:underline flex items-center gap-0.5">
           All people <ArrowUpRight size={12} />
         </Link>
       }
@@ -37,11 +37,11 @@ export function SpotlightStrip({ people, className }: { people: PersonState[]; c
                 <Avatar person={ps.person} size={30} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[12.5px] font-medium truncate">{ps.person.name}</span>
+                    <span className="text-[13px] font-medium truncate">{ps.person.name}</span>
                     {ps.person.accessibility.mobility === "wheelchair" && <Accessibility size={12} className="text-info" />}
                     {!ps.person.accessibility.smartphone && <PhoneOff size={12} className="text-ink-3" />}
                   </div>
-                  <div className="text-[11px] text-ink-3 flex items-center gap-1.5 truncate">
+                  <div className="text-[11.5px] text-ink-3 flex items-center gap-1.5 truncate">
                     <Icon size={11} />
                     <span className="truncate">{action && action.code !== "NO_ACTION" ? action.title : ps.person.contextNote}</span>
                   </div>

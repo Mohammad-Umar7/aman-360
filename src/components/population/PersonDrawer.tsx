@@ -47,10 +47,10 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-[16px] font-semibold">{person.name}</h2>
-            <Arabic className="text-[13px] text-ink-2">{person.nameAr}</Arabic>
+            <Arabic className="text-[13.5px] text-ink-2">{person.nameAr}</Arabic>
             <StatusPill status={ps.status} pulse />
           </div>
-          <div className="text-[12px] text-ink-3 mt-0.5 flex items-center gap-1.5">
+          <div className="text-[12.5px] text-ink-3 mt-0.5 flex items-center gap-1.5">
             <Icon size={12} /> {person.contextNote}
           </div>
           <div className="flex flex-wrap gap-1.5 mt-2">
@@ -89,12 +89,12 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
           <PanelDivider label="Why this person is affected" />
           <div className="flex items-center gap-2 mb-2">
             <LayerTag layer="deterministic" long />
-            <span className="text-[12px] text-ink-2">{impact.reason}</span>
+            <span className="text-[12.5px] text-ink-2">{impact.reason}</span>
           </div>
           <RuleTraceList rules={impact.rules} />
 
           {impact.route?.blockedEdgeId && (
-            <div className="rounded-lg border border-line bg-white/[0.02] px-3 py-2.5 text-[12px] mt-2">
+            <div className="rounded-lg border border-line bg-white/[0.02] px-3 py-2.5 text-[12.5px] mt-2">
               <div className="flex items-center gap-2 font-medium mb-1">
                 <Route size={13} className="text-brand-2" /> Route engine
               </div>
@@ -110,7 +110,7 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
             </div>
           )}
           {ap && (
-            <div className="rounded-lg border border-line bg-white/[0.02] px-3 py-2.5 text-[12px] mt-2">
+            <div className="rounded-lg border border-line bg-white/[0.02] px-3 py-2.5 text-[12.5px] mt-2">
               <Kv k="Assembly point" v={ap.name} />
               <Kv k="Accessible" v={ap.accessible ? "yes" : "no"} />
             </div>
@@ -120,16 +120,16 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
           {action && (
             <div className="rounded-lg border border-teal/25 bg-teal/[0.06] px-3 py-2.5">
               <div className="flex items-center gap-2">
-                <span className="text-[13px] font-semibold text-teal-2">{action.title}</span>
-                <span className="mono text-[10.5px] text-ink-3">{action.sop}</span>
+                <span className="text-[13.5px] font-semibold text-teal-2">{action.title}</span>
+                <span className="mono text-[11px] text-ink-3">{action.sop}</span>
               </div>
-              <div className="text-[12px] text-ink-2 mt-1 leading-4.5">{action.summary}</div>
-              <Arabic className="text-[12.5px] text-ink-2 mt-1">{action.titleAr}</Arabic>
+              <div className="text-[12.5px] text-ink-2 mt-1 leading-4.5">{action.summary}</div>
+              <Arabic className="text-[13px] text-ink-2 mt-1">{action.titleAr}</Arabic>
             </div>
           )}
         </>
       ) : (
-        <div className="text-[12px] text-ink-3">Impact analysis has not run yet. Advance the scenario to step 3.</div>
+        <div className="text-[12.5px] text-ink-3">Impact analysis has not run yet. Advance the scenario to step 3.</div>
       )}
 
       {message && (
@@ -153,12 +153,12 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
           <div className="rounded-xl border border-line px-3 py-3">
             <div className="flex items-center gap-2 mb-2">
               <Badge tone={CATEGORY[response.classification.category].tone}>{CATEGORY[response.classification.category].label}</Badge>
-              <span className="mono text-[10.5px] text-ink-3">{response.at}</span>
-              <span className="text-[10.5px] text-ink-3">via {channelLabel(response.channel)}</span>
-              <span className="ml-auto num text-[11px] text-ink-3">urgency {response.classification.urgency}/5</span>
+              <span className="mono text-[11px] text-ink-3">{response.at}</span>
+              <span className="text-[11px] text-ink-3">via {channelLabel(response.channel)}</span>
+              <span className="ml-auto num text-[11.5px] text-ink-3">urgency {response.classification.urgency}/5</span>
             </div>
-            {response.lang === "ar" ? <Arabic className="text-[14px] text-ink">{response.text}</Arabic> : <p className="text-[13px] text-ink">{response.text}</p>}
-            <div className="mt-2 pt-2 border-t border-line text-[11.5px] text-ink-2 flex items-start gap-2">
+            {response.lang === "ar" ? <Arabic className="text-[14px] text-ink">{response.text}</Arabic> : <p className="text-[13.5px] text-ink">{response.text}</p>}
+            <div className="mt-2 pt-2 border-t border-line text-[12px] text-ink-2 flex items-start gap-2">
               <LayerTag layer="ai" />
               <span>
                 {response.classification.summary} · confidence {Math.round(response.classification.confidence * 100)}%
@@ -166,8 +166,8 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
             </div>
           </div>
           {reply && step >= 7 && (
-            <div className="rounded-xl border border-brand/25 bg-brand/[0.06] px-3 py-3 text-[12.5px]">
-              <div className="flex items-center gap-2 mb-1 text-[11px] text-ink-3">
+            <div className="rounded-xl border border-brand/25 bg-brand/[0.06] px-3 py-3 text-[13px]">
+              <div className="flex items-center gap-2 mb-1 text-[11.5px] text-ink-3">
                 <span className="font-medium text-brand-2">Operator reply</span>
                 <span className="mono">{clockAt(reply.sec)}</span>
                 <Badge tone="violet" className="ml-auto">AI draft · approved</Badge>
@@ -183,11 +183,11 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
           <PanelDivider label="Escalation" />
           <ol className="space-y-2">
             {escalation.map((e, i) => (
-              <li key={i} className="flex gap-3 text-[12px]">
-                <span className="mono text-[10.5px] text-ink-4 shrink-0 w-14">{e.at}</span>
+              <li key={i} className="flex gap-3 text-[12.5px]">
+                <span className="mono text-[11px] text-ink-4 shrink-0 w-14">{e.at}</span>
                 <div>
                   <div className="text-ink">
-                    <span className="mono text-[10.5px] text-teal-2 mr-1.5">{e.rule}</span>
+                    <span className="mono text-[11px] text-teal-2 mr-1.5">{e.rule}</span>
                     {e.action}
                   </div>
                   <div className="text-ink-3">{e.outcome}</div>
@@ -201,7 +201,7 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
       {triage && (
         <>
           <PanelDivider label="Triage" />
-          <div className="rounded-xl border border-line px-3 py-3 text-[12px]">
+          <div className="rounded-xl border border-line px-3 py-3 text-[12.5px]">
             <div className="flex items-center gap-2 mb-1.5">
               <ListChecks size={13} className="text-ink-3" />
               <span className="font-medium">Priority {triage.priority}</span>
@@ -223,7 +223,7 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
       )}
 
       {impact && !impact.affected && (
-        <div className="rounded-lg border border-line bg-white/[0.02] px-3 py-2.5 text-[12px] text-ink-2">
+        <div className="rounded-lg border border-line bg-white/[0.02] px-3 py-2.5 text-[12.5px] text-ink-2">
           No alert issued. Sending a message here would be noise: this person is outside the hazard polygon and has no route conflict. Suppressing unnecessary alerts protects trust in the ones that matter.
         </div>
       )}

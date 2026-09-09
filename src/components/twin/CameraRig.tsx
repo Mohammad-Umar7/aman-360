@@ -46,7 +46,7 @@ function followPose(kind: "ahmed" | "ambulance", step: number, t: number, out: {
   out.target.set(p.x + fx * 12, 1.5, -p.y + fz * 12);
 }
 
-export function CameraRig({ interactive }: { interactive: boolean }) {
+export function CameraRig({ interactive, mode }: { interactive: boolean; mode?: "orbit" }) {
   const controls = useRef<OrbitControlsImpl>(null);
   const camera = useThree((s) => s.camera);
   const userControl = useRef(false);
@@ -60,7 +60,14 @@ export function CameraRig({ interactive }: { interactive: boolean }) {
     return unsub;
   }, []);
 
-  useFrame((_, dt) => {
+  useFrame((st, dt) => {
+    if (mode === "orbit") {
+      const a = st.clock.getElapsedTime() * 0.045 - 2.4;
+      const r = 235;
+      camera.position.set(Math.cos(a) * r, 96, Math.sin(a) * r);
+      camera.lookAt(8, 4, 0);
+      return;
+    }
     const { step, t, camera: preset } = useSim.getState();
     let pose: CamPose | "ahmed" | "ambulance";
     if (preset === "auto") pose = autoPose(step, t);
@@ -89,6 +96,7 @@ export function CameraRig({ interactive }: { interactive: boolean }) {
     }
   });
 
+  if (mode === "orbit") return null;
   return (
     <OrbitControls
       ref={controls}

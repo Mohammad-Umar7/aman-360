@@ -42,7 +42,7 @@ function Caption() {
     <AnimatePresence mode="wait">
       <motion.div key={c.title} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.35 }} className="max-w-[560px]">
         <div className="text-[18px] font-semibold tracking-tight leading-6 text-white drop-shadow">{c.title}</div>
-        <div className="text-[12.5px] text-ink-2 leading-4.5 mt-0.5 drop-shadow">{c.sub}</div>
+        <div className="text-[13px] text-ink-2 leading-4.5 mt-0.5 drop-shadow">{c.sub}</div>
       </motion.div>
     </AnimatePresence>
   );
@@ -91,7 +91,7 @@ export function TwinHUD({ compact }: { compact?: boolean }) {
               { label: "Silent", value: k.noResponse, tone: "#8b99ad" },
             ].map((x) => (
               <div key={x.label} className="glass rounded-lg px-3 py-2 min-w-[86px]">
-                <div className="text-[10px] uppercase tracking-wider text-ink-3">{x.label}</div>
+                <div className="text-[10.5px] uppercase tracking-wider text-ink-3">{x.label}</div>
                 <div className="num text-[18px] font-semibold leading-6" style={{ color: x.value ? x.tone : "#6f7e94" }}>
                   {fmtInt(x.value)}
                 </div>
@@ -99,7 +99,7 @@ export function TwinHUD({ compact }: { compact?: boolean }) {
             ))}
           </div>
           {!compact && (
-            <div className="pointer-events-auto glass rounded-lg px-3 py-2 text-[10.5px] text-ink-2 flex items-center gap-4">
+            <div className="pointer-events-auto glass rounded-lg px-3 py-2 text-[11px] text-ink-2 flex items-center gap-4">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-4 border-t-2 border-dashed border-[#ff6b63]" /> Hazard polygon
               </span>

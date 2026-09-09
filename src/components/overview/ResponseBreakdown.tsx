@@ -27,18 +27,18 @@ export function ResponseBreakdown({ kpis, className }: { kpis: Kpis; className?:
       </div>
       <div className="grid grid-cols-2 gap-x-4 mt-3">
         {SEG.map((s) => (
-          <div key={s.key} className="flex items-center justify-between py-1 text-[12px]">
+          <div key={s.key} className="flex items-center justify-between py-1 text-[12.5px]">
             <span className="flex items-center gap-2 text-ink-2">
               <span className="h-2 w-2 rounded-sm" style={{ background: s.color }} />
               {s.label}
             </span>
             <span className="num text-ink">
               {fmtInt(kpis[s.key])}
-              <span className="text-ink-4 ml-1 text-[10.5px]">{kpis.reached ? pct(kpis[s.key] / kpis.reached) : "—"}</span>
+              <span className="text-ink-4 ml-1 text-[11px]">{kpis.reached ? pct(kpis[s.key] / kpis.reached) : "—"}</span>
             </span>
           </div>
         ))}
-        <div className="flex items-center justify-between py-1 text-[12px]">
+        <div className="flex items-center justify-between py-1 text-[12.5px]">
           <span className="flex items-center gap-2 text-ink-3">
             <span className="h-2 w-2 rounded-sm bg-white/[0.12]" />
             Read, not yet replied

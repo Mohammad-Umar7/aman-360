@@ -9,7 +9,7 @@
   --color-bg-4: #1d2b47;
 
   /* Lines */
-  --color-line: rgba(148, 163, 184, 0.14);
+  --color-line: rgba(148, 163, 184, 0.16);
   --color-line-strong: rgba(148, 163, 184, 0.3);
 
   /* Ink */
@@ -34,7 +34,7 @@
   --font-arabic: var(--font-arabic), "Noto Sans Arabic", "Segoe UI", Tahoma, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
-  --radius-panel: 14px;
+  --radius-panel: 16px;
   --radius-tile: 10px;
 
   --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 12px 40px -20px rgba(0, 0, 0, 0.7);

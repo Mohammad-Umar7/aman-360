@@ -37,10 +37,10 @@ export function OperatorQueue({ items, className }: { items: OperatorItem[]; cla
                 <div className={cn("mt-1 h-2 w-2 rounded-full shrink-0", it.priority === "high" ? "bg-alert" : it.priority === "medium" ? "bg-warn" : "bg-ink-4")} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[12.5px] font-medium text-ink leading-4.5 truncate">{it.title}</span>
+                    <span className="text-[13px] font-medium text-ink leading-4.5 truncate">{it.title}</span>
                     <LayerTag layer={it.layer} />
                   </div>
-                  <div className="text-[11.5px] text-ink-3 mt-0.5 leading-4">{it.detail}</div>
+                  <div className="text-[12px] text-ink-3 mt-0.5 leading-4">{it.detail}</div>
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0">
                   <Badge tone={P[it.priority]}>{it.priority}</Badge>
@@ -56,7 +56,7 @@ export function OperatorQueue({ items, className }: { items: OperatorItem[]; cla
         </ul>
       )}
       {items.length > 0 && (
-        <div className="px-4 py-2 border-t border-line text-[11px] text-ink-4 flex items-center gap-1.5">
+        <div className="px-4 py-2 border-t border-line text-[11.5px] text-ink-4 flex items-center gap-1.5">
           <BellRing size={11} /> Items clear automatically when the underlying rule or request is resolved.
         </div>
       )}

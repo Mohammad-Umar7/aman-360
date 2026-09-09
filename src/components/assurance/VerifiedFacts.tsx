@@ -20,8 +20,8 @@ export function VerifiedFacts({ facts, lang, className }: { facts: VerifiedFact[
             <li key={f.subject} className="px-4 py-3">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={13} className="text-teal-2" />
-                <span className="text-[12px] text-ink-2 truncate">{f.label}</span>
-                <span className="mono text-[10.5px] text-ink-4 ml-auto">{f.verifiedAt}</span>
+                <span className="text-[12.5px] text-ink-2 truncate">{f.label}</span>
+                <span className="mono text-[11px] text-ink-4 ml-auto">{f.verifiedAt}</span>
               </div>
               <div className="mt-1 flex items-center gap-2">
                 {lang === "ar" ? <Arabic className="text-[13.5px] font-semibold">{f.valueAr}</Arabic> : <span className="text-[13.5px] font-semibold">{f.value}</span>}
@@ -59,9 +59,9 @@ export function ChannelConsistency({ checks, className, dense }: { checks: Chann
       {checks.length === 0 ? (
         <EmptyState icon={<MinusCircle size={22} />} title="No channels to check" hint="Published content is compared against the verified facts continuously." />
       ) : (
-        <table className="w-full text-[12px]">
+        <table className="w-full text-[12.5px]">
           <thead>
-            <tr className="text-left text-ink-4 text-[10.5px] uppercase tracking-wider">
+            <tr className="text-left text-ink-4 text-[11px] uppercase tracking-wider">
               <th className="px-4 py-2 font-medium">Channel</th>
               {!dense && <th className="px-2 py-2 font-medium">Checks</th>}
               <th className="px-2 py-2 font-medium">Last sync</th>
@@ -81,7 +81,7 @@ export function ChannelConsistency({ checks, className, dense }: { checks: Chann
                     </div>
                   </td>
                 )}
-                <td className="px-2 py-2 mono text-[11px] text-ink-3">{c.lastSync}</td>
+                <td className="px-2 py-2 mono text-[11.5px] text-ink-3">{c.lastSync}</td>
                 <td className="px-4 py-2 text-right">
                   {!c.published ? (
                     <Badge tone="neutral">prepared</Badge>

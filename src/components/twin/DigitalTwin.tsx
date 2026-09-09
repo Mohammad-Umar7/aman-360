@@ -18,13 +18,22 @@ function Loader() {
         <div className="h-1 rounded-full bg-white/[0.08] overflow-hidden">
           <div className="h-full bg-brand transition-[width] duration-200" style={{ width: `${progress}%` }} />
         </div>
-        <div className="mt-2 text-[11px] text-ink-3 num">{Math.round(progress)}% · Blender district model</div>
+        <div className="mt-2 text-[12px] text-ink-3 num">{Math.round(progress)}% · Blender district model</div>
       </div>
     </div>
   );
 }
 
-export default function DigitalTwin({ className, hud = "full", interactive = true }: { className?: string; hud?: "full" | "compact" | "none"; interactive?: boolean }) {
+export interface DigitalTwinProps {
+  className?: string;
+  hud?: "full" | "compact" | "none";
+  interactive?: boolean;
+  /** Override the store camera (e.g. a slow orbit for the landing hero). */
+  cameraMode?: "orbit";
+  labels?: boolean;
+}
+
+export default function DigitalTwin({ className, hud = "full", interactive = true, cameraMode, labels = true }: DigitalTwinProps) {
   return (
     <div className={cn("relative w-full h-full overflow-hidden bg-[#0b1220]", className)}>
       <Canvas
@@ -35,7 +44,7 @@ export default function DigitalTwin({ className, hud = "full", interactive = tru
         style={{ position: "absolute", inset: 0 }}
       >
         <Suspense fallback={null}>
-          <Scene interactive={interactive} compact={hud === "compact"} />
+          <Scene interactive={interactive} compact={hud === "compact"} cameraMode={cameraMode} labels={labels} />
         </Suspense>
       </Canvas>
       <Loader />

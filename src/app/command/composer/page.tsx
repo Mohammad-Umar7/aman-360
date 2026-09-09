@@ -42,7 +42,7 @@ export default function ComposerPage() {
   }
 
   return (
-    <div className="p-5 flex flex-col gap-4 min-w-[1100px]">
+    <div className="p-6 flex flex-col gap-5 min-w-[1100px]">
       {road && (
         <div className="panel px-4 py-3 flex items-center gap-4">
           <LayerTag layer="deterministic" long />
@@ -50,13 +50,13 @@ export default function ComposerPage() {
             <div className="eyebrow">Verified statement · single source of truth</div>
             <div className="text-[14px] font-semibold truncate">
               {road.label}: <span className="text-teal-2">{road.value}</span>
-              <span className="text-ink-3 font-normal text-[12px] ml-2">
+              <span className="text-ink-3 font-normal text-[12.5px] ml-2">
                 {sourceById(road.sourceId).org} · {road.verifiedAt} · assurance {Math.round(road.assurance * 100)}%
               </span>
             </div>
           </div>
           <div className="ml-auto flex items-center gap-3">
-            <span className="text-[11.5px] text-ink-3">Preview language</span>
+            <span className="text-[12px] text-ink-3">Preview language</span>
             <Segmented
               size="xs"
               value={lang}
@@ -70,7 +70,7 @@ export default function ComposerPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-12 gap-4">
+      <div className="grid grid-cols-12 gap-5">
         <Panel title="Recipients" eyebrow="Composed messages" className="col-span-12 xl:col-span-3" padded={false}>
           <ul className="divide-y divide-line">
             {recipients.map((ps) => {
@@ -81,8 +81,8 @@ export default function ComposerPage() {
                   <button onClick={() => setSel(ps.person.id)} className={cn("w-full text-left px-4 py-2.5 flex items-center gap-3 transition-colors", active ? "bg-brand/10" : "hover:bg-white/[0.03]")}>
                     <Avatar person={ps.person} size={28} />
                     <div className="min-w-0 flex-1">
-                      <div className="text-[12.5px] font-medium truncate">{ps.person.name}</div>
-                      <div className="text-[11px] text-ink-3 truncate">{a.title}</div>
+                      <div className="text-[13px] font-medium truncate">{ps.person.name}</div>
+                      <div className="text-[11.5px] text-ink-3 truncate">{a.title}</div>
                     </div>
                     {ps.message?.approval === "operator" && <Badge tone="warn">review</Badge>}
                   </button>
@@ -95,8 +95,8 @@ export default function ComposerPage() {
                   <Globe size={14} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[12.5px] font-medium">Public channels</div>
-                  <div className="text-[11px] text-ink-3">Portal banner · VMS-07 signage</div>
+                  <div className="text-[13px] font-medium">Public channels</div>
+                  <div className="text-[11.5px] text-ink-3">Portal banner · VMS-07 signage</div>
                 </div>
               </button>
             </li>
@@ -140,7 +140,7 @@ export default function ComposerPage() {
               {checks.map((c) => (
                 <li key={c.channel} className="px-4 py-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[12.5px] font-medium">{c.label}</span>
+                    <span className="text-[13px] font-medium">{c.label}</span>
                     {c.consistent ? (
                       <Badge tone="safe" className="ml-auto">
                         <CheckCircle2 size={11} /> pass
@@ -153,7 +153,7 @@ export default function ComposerPage() {
                   </div>
                   <ul className="mt-1.5 space-y-0.5">
                     {c.checks.map((k) => (
-                      <li key={k.name} className="flex items-center gap-1.5 text-[11px] text-ink-3">
+                      <li key={k.name} className="flex items-center gap-1.5 text-[11.5px] text-ink-3">
                         <span className={cn("h-1.5 w-1.5 rounded-full", k.pass ? "bg-safe" : "bg-alert")} />
                         {k.name}
                       </li>
@@ -162,12 +162,12 @@ export default function ComposerPage() {
                 </li>
               ))}
             </ul>
-            <p className="px-4 py-2.5 text-[11px] text-ink-4 border-t border-line">Every variant is checked for the verified road, the verified status, absence of contradiction, Arabic–English parity and channel limits.</p>
+            <p className="px-4 py-2.5 text-[11.5px] text-ink-4 border-t border-line">Every variant is checked for the verified road, the verified status, absence of contradiction, Arabic–English parity and channel limits.</p>
           </Panel>
           {!isPublic && selected?.message && <AiTracePanel ai={selected.message.ai} />}
           {isPublic && (
             <Panel title="Publication" eyebrow="Status">
-              <ul className="text-[12px] space-y-1.5 text-ink-2">
+              <ul className="text-[12.5px] space-y-1.5 text-ink-2">
                 <li className="flex items-center gap-2">
                   <span className={cn("h-2 w-2 rounded-full", step >= 5 ? "bg-safe" : "bg-warn")} /> Portal banner {step >= 5 ? "live since 14:08:00" : "prepared — stale page still visible"}
                 </li>

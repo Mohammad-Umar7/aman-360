@@ -16,8 +16,8 @@ export function MessageCard({ message, lang, showBoth = true, className }: { mes
         <Badge tone="teal">
           <ShieldCheck size={11} /> {action.title}
         </Badge>
-        <span className="mono text-[10.5px] text-ink-3">{action.sop}</span>
-        <span className="ml-auto flex items-center gap-1.5 text-[10.5px] text-ink-3">
+        <span className="mono text-[11px] text-ink-3">{action.sop}</span>
+        <span className="ml-auto flex items-center gap-1.5 text-[11px] text-ink-3">
           {message.approval === "operator" ? (
             <>
               <UserCheck size={11} className="text-warn" /> operator confirmed
@@ -48,12 +48,12 @@ export function MessageCard({ message, lang, showBoth = true, className }: { mes
 
 export function AiTracePanel({ ai, className }: { ai: Message["ai"]; className?: string }) {
   return (
-    <div className={cn("rounded-xl border border-violet/20 bg-violet/[0.05] px-3 py-3 text-[12px]", className)}>
+    <div className={cn("rounded-xl border border-violet/20 bg-violet/[0.05] px-3 py-3 text-[12.5px]", className)}>
       <div className="flex items-center gap-2 mb-2">
         <Sparkles size={13} className="text-violet-2" />
         <span className="font-semibold text-violet-2">AI trace</span>
-        <span className="mono text-[10.5px] text-ink-3">{ai.model}</span>
-        <span className="ml-auto num text-[11px] text-ink-3">confidence {Math.round(ai.confidence * 100)}%</span>
+        <span className="mono text-[11px] text-ink-3">{ai.model}</span>
+        <span className="ml-auto num text-[11.5px] text-ink-3">confidence {Math.round(ai.confidence * 100)}%</span>
       </div>
       <div className="text-ink-2 mb-2">
         <span className="text-ink-3">Task · </span>

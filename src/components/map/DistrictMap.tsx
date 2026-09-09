@@ -222,7 +222,7 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
         )}
       </svg>
       {!compact && (
-        <div className="absolute left-3 bottom-3 glass rounded-lg px-3 py-2 text-[10.5px] text-ink-2 flex flex-wrap gap-x-4 gap-y-1">
+        <div className="absolute left-3 bottom-3 glass rounded-lg px-3 py-2 text-[11px] text-ink-2 flex flex-wrap gap-x-4 gap-y-1">
           <Legend color="#f0554f" label="Hazard polygon" dashed />
           <Legend color="#f0554f" label="Closed segment" hatch />
           <Legend color="#4f8df7" label="Verified alternative route" />

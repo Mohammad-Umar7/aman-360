@@ -14,10 +14,10 @@ export function RuleTraceList({ rules, compact }: { rules: RuleTrace[]; compact?
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="mono text-[10.5px] text-ink-3">{r.rule}</span>
-              <span className={cn("text-[12px] font-medium", r.fired ? "text-ink" : "text-ink-3")}>{r.title}</span>
+              <span className="mono text-[11px] text-ink-3">{r.rule}</span>
+              <span className={cn("text-[12.5px] font-medium", r.fired ? "text-ink" : "text-ink-3")}>{r.title}</span>
             </div>
-            {!compact && <div className="text-[11.5px] text-ink-3 leading-4 mt-0.5">{r.detail}</div>}
+            {!compact && <div className="text-[12px] text-ink-3 leading-4 mt-0.5">{r.detail}</div>}
           </div>
         </li>
       ))}

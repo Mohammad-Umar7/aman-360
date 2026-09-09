@@ -36,10 +36,10 @@ export function TimelineFeed({ events, className, limit }: { events: TimelineEve
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
-                    <span className="mono text-[10.5px] text-ink-4 shrink-0">{e.at}</span>
-                    <span className="text-[12.5px] text-ink leading-4.5">{e.title}</span>
+                    <span className="mono text-[11px] text-ink-4 shrink-0">{e.at}</span>
+                    <span className="text-[13px] text-ink leading-4.5">{e.title}</span>
                   </div>
-                  {e.detail && <div className="text-[11.5px] text-ink-3 leading-4 mt-0.5">{e.detail}</div>}
+                  {e.detail && <div className="text-[12px] text-ink-3 leading-4 mt-0.5">{e.detail}</div>}
                 </div>
                 {e.layer === "ai" && <Sparkles size={12} className="text-violet/70 mt-1 shrink-0" />}
               </motion.li>

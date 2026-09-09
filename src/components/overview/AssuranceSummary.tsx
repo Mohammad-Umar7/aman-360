@@ -19,7 +19,7 @@ export function AssuranceSummary({ state }: { state: ScenarioState }) {
       title="Communication assurance"
       layer="deterministic"
       actions={
-        <Link href="/command/assurance" className="text-[11.5px] text-brand-2 hover:underline flex items-center gap-0.5">
+        <Link href="/command/assurance" className="text-[12px] text-brand-2 hover:underline flex items-center gap-0.5">
           Details <ArrowUpRight size={12} />
         </Link>
       }
@@ -65,7 +65,7 @@ export function AssuranceSummary({ state }: { state: ScenarioState }) {
         <Kv k="Verified at" v={road ? <span className="mono">{road.verifiedAt}</span> : "—"} />
       </div>
       {ctr && (
-        <div className="mt-3 rounded-lg border border-warn/25 bg-warn/[0.07] px-3 py-2 text-[12px] leading-4.5">
+        <div className="mt-3 rounded-lg border border-warn/25 bg-warn/[0.07] px-3 py-2 text-[12.5px] leading-4.5">
           <div className="flex items-center gap-1.5 font-medium text-[#ffd27a] mb-0.5">
             <GitCompareArrows size={13} /> Public portal said OPEN — Police Operations said CLOSED
           </div>
@@ -73,7 +73,7 @@ export function AssuranceSummary({ state }: { state: ScenarioState }) {
         </div>
       )}
       {step >= 5 && state.kpis.consistency >= 0.99 && (
-        <div className="mt-2 flex items-center gap-1.5 text-[12px] text-[#7fe0a8]">
+        <div className="mt-2 flex items-center gap-1.5 text-[12.5px] text-[#7fe0a8]">
           <CheckCircle2 size={13} /> All published channels match the verified statement
         </div>
       )}

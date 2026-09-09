@@ -9,7 +9,7 @@ import { SkyAndLights } from "@/components/twin/Sky";
 import { Vehicles } from "@/components/twin/Vehicles";
 import { Water } from "@/components/twin/Water";
 
-export function Scene({ interactive, compact }: { interactive: boolean; compact: boolean }) {
+export function Scene({ interactive, compact, cameraMode, labels }: { interactive: boolean; compact: boolean; cameraMode?: "orbit"; labels: boolean }) {
   return (
     <>
       <SkyAndLights />
@@ -18,9 +18,9 @@ export function Scene({ interactive, compact }: { interactive: boolean; compact:
       <Rain />
       <Vehicles />
       <Signage />
-      <Overlays compact={compact} />
-      <CameraRig interactive={interactive} />
-      {/* infinite ground beyond the modelled district */}
+      <Overlays compact={compact} labels={labels} />
+      <CameraRig interactive={interactive} mode={cameraMode} />
+      {/* ground beyond the modelled district */}
       <mesh rotation-x={-Math.PI / 2} position-y={-0.08} receiveShadow>
         <circleGeometry args={[1600, 48]} />
         <meshStandardMaterial color="#cbbfa6" roughness={1} />

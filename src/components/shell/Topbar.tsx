@@ -33,7 +33,7 @@ export function Topbar() {
               </Badge>
             )}
           </div>
-          <div className="text-[11px] text-ink-3 truncate">Al Majaz district · Sharjah (synthetic) · {INCIDENT_DATE}</div>
+          <div className="text-[11.5px] text-ink-3 truncate">Al Majaz district · Sharjah (synthetic) · {INCIDENT_DATE}</div>
         </div>
         <Badge tone={st.tone} dot pulse={state.incidentStatus === "active"}>
           {st.label}
@@ -41,7 +41,7 @@ export function Topbar() {
       </div>
 
       <div className="ml-auto flex items-center gap-3">
-        <div className="hidden lg:flex items-center gap-2 text-[11.5px] text-ink-3">
+        <div className="hidden lg:flex items-center gap-2 text-[12px] text-ink-3">
           <Radio size={13} className="text-safe" />
           <span>Feeds 6/6</span>
           <span className="text-ink-4">·</span>
@@ -60,8 +60,8 @@ export function Topbar() {
             ]}
           />
         </div>
-        <div className="mono text-[13px] text-ink tabular-nums bg-white/[0.04] border border-line rounded-lg px-2.5 h-8 flex items-center gap-2">
-          <span className="text-ink-4 text-[10.5px] font-sans">GST</span>
+        <div className="mono text-[13.5px] text-ink tabular-nums bg-white/[0.04] border border-line rounded-lg px-2.5 h-8 flex items-center gap-2">
+          <span className="text-ink-4 text-[11px] font-sans">GST</span>
           {state.clock}
         </div>
       </div>

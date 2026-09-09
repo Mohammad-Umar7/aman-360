@@ -38,8 +38,8 @@ export default function TriagePage() {
   const counts: Record<ResponseCategory, number> = { safe: k.safe, help: k.help, clarification: k.clarification, different: k.different, none: k.noResponse };
 
   return (
-    <div className="p-5 flex flex-col gap-4 min-w-[1100px]">
-      <div className="grid grid-cols-12 gap-4">
+    <div className="p-6 flex flex-col gap-5 min-w-[1100px]">
+      <div className="grid grid-cols-12 gap-5">
         <Panel title="Incoming responses" eyebrow={`${state.responses.length} individual replies · ${fmtInt(k.safe + k.help + k.clarification + k.different)} aggregate`} className="col-span-12 xl:col-span-4 max-h-[820px]" padded={false} bodyClassName="overflow-y-auto">
           <ul className="divide-y divide-line">
             <AnimatePresence initial={false}>
@@ -53,8 +53,8 @@ export default function TriagePage() {
               <li key={p.person.id} className="px-4 py-3 flex items-center gap-3 opacity-80">
                 <Avatar person={p.person} size={28} />
                 <div className="min-w-0 flex-1">
-                  <div className="text-[12.5px] font-medium">{p.person.name}</div>
-                  <div className="text-[11px] text-ink-3">No response · {p.escalation[p.escalation.length - 1]?.outcome ?? "escalation pending"}</div>
+                  <div className="text-[13px] font-medium">{p.person.name}</div>
+                  <div className="text-[11.5px] text-ink-3">No response · {p.escalation[p.escalation.length - 1]?.outcome ?? "escalation pending"}</div>
                 </div>
                 <Badge tone="alert" dot pulse>
                   silent
@@ -74,8 +74,8 @@ export default function TriagePage() {
                   <Badge tone={meta.tone} dot>
                     {meta.label}
                   </Badge>
-                  <span className="num text-[12px] text-ink ml-auto">{fmtInt(counts[cat])}</span>
-                  <span className="text-[10.5px] text-ink-4">aggregate</span>
+                  <span className="num text-[12.5px] text-ink ml-auto">{fmtInt(counts[cat])}</span>
+                  <span className="text-[11px] text-ink-4">aggregate</span>
                 </div>
                 <ul className="divide-y divide-line">
                   {items.map((r) => {
@@ -84,10 +84,10 @@ export default function TriagePage() {
                       <li key={r.id} className="px-3 py-2 flex items-center gap-2.5">
                         <Avatar person={ps.person} size={22} />
                         <div className="min-w-0 flex-1">
-                          <div className="text-[12px] font-medium truncate">{ps.person.name}</div>
-                          <div className="text-[11px] text-ink-3 truncate">{r.classification.summary}</div>
+                          <div className="text-[12.5px] font-medium truncate">{ps.person.name}</div>
+                          <div className="text-[11.5px] text-ink-3 truncate">{r.classification.summary}</div>
                         </div>
-                        <span className="num text-[10.5px] text-ink-4">u{r.classification.urgency}</span>
+                        <span className="num text-[11px] text-ink-4">u{r.classification.urgency}</span>
                       </li>
                     );
                   })}
@@ -96,12 +96,12 @@ export default function TriagePage() {
                       <li key={p.person.id} className="px-3 py-2 flex items-center gap-2.5">
                         <Avatar person={p.person} size={22} />
                         <div className="min-w-0 flex-1">
-                          <div className="text-[12px] font-medium truncate">{p.person.name}</div>
-                          <div className="text-[11px] text-ink-3 truncate">{p.person.vulnerableRegistry ? "Vulnerable registry — escalating" : "Monitoring"}</div>
+                          <div className="text-[12.5px] font-medium truncate">{p.person.name}</div>
+                          <div className="text-[11.5px] text-ink-3 truncate">{p.person.vulnerableRegistry ? "Vulnerable registry — escalating" : "Monitoring"}</div>
                         </div>
                       </li>
                     ))}
-                  {items.length === 0 && cat !== "none" && <li className="px-3 py-2 text-[11px] text-ink-4">No individual replies in this group among profiled residents.</li>}
+                  {items.length === 0 && cat !== "none" && <li className="px-3 py-2 text-[11.5px] text-ink-4">No individual replies in this group among profiled residents.</li>}
                 </ul>
               </div>
             );
@@ -114,13 +114,13 @@ export default function TriagePage() {
               <p className="text-[13.5px] font-medium leading-5 text-ink">{state.summary.headline}</p>
               <ul className="mt-2.5 space-y-1.5">
                 {state.summary.bullets.map((b) => (
-                  <li key={b} className="flex gap-2 text-[12px] text-ink-2 leading-4.5">
+                  <li key={b} className="flex gap-2 text-[12.5px] text-ink-2 leading-4.5">
                     <Sparkles size={12} className="text-violet mt-0.5 shrink-0" />
                     {b}
                   </li>
                 ))}
               </ul>
-              <div className="mt-2.5 text-[10.5px] text-ink-4">Counts are copied from the deterministic state; the model only orders and phrases them.</div>
+              <div className="mt-2.5 text-[11px] text-ink-4">Counts are copied from the deterministic state; the model only orders and phrases them.</div>
             </Panel>
           )}
 
@@ -134,8 +134,8 @@ export default function TriagePage() {
                   return (
                     <li key={t.id} className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        <span className={cn("num h-6 w-6 rounded-md flex items-center justify-center text-[11.5px] font-semibold", t.priority === 1 ? "bg-alert/20 text-[#ff9b96]" : t.priority === 2 ? "bg-warn/20 text-[#ffd27a]" : "bg-white/[0.06] text-ink-2")}>{t.priority}</span>
-                        <button onClick={() => selectPerson(t.personId)} className="text-[12.5px] font-medium hover:underline">
+                        <span className={cn("num h-6 w-6 rounded-md flex items-center justify-center text-[12px] font-semibold", t.priority === 1 ? "bg-alert/20 text-[#ff9b96]" : t.priority === 2 ? "bg-warn/20 text-[#ffd27a]" : "bg-white/[0.06] text-ink-2")}>{t.priority}</span>
+                        <button onClick={() => selectPerson(t.personId)} className="text-[13px] font-medium hover:underline">
                           {ps.person.name}
                         </button>
                         <Badge tone={CATEGORY[t.category].tone}>{CATEGORY[t.category].label}</Badge>
@@ -144,15 +144,15 @@ export default function TriagePage() {
                         </Badge>
                       </div>
                       <Meter value={t.score / 100} tone={t.score >= 80 ? "alert" : t.score >= 50 ? "warn" : "brand"} label={`Score ${t.score}`} className="mt-2" />
-                      <div className="text-[11.5px] text-ink-2 mt-1.5 leading-4.5">{t.recommended}</div>
+                      <div className="text-[12px] text-ink-2 mt-1.5 leading-4.5">{t.recommended}</div>
                       {t.unit && (
-                        <div className="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-ink">
+                        <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-ink">
                           {t.unit.toLowerCase().includes("ambulance") ? <Ambulance size={12} className="text-alert" /> : <Siren size={12} className="text-warn" />}
                           {t.unit}
                           {t.eta && <span className="text-ink-3">· ETA {t.eta}</span>}
                         </div>
                       )}
-                      {t.resolution && <div className="mt-1 text-[11.5px] text-[#7fe0a8]">{t.resolution}</div>}
+                      {t.resolution && <div className="mt-1 text-[12px] text-[#7fe0a8]">{t.resolution}</div>}
                     </li>
                   );
                 })}
@@ -171,14 +171,14 @@ export default function TriagePage() {
                     <li key={p.person.id} className="px-4 py-3">
                       <div className="flex items-center gap-2 mb-1.5">
                         <Avatar person={p.person} size={22} />
-                        <span className="text-[12.5px] font-medium">{p.person.name}</span>
-                        <span className="text-[11px] text-ink-3">· {p.person.contextNote}</span>
+                        <span className="text-[13px] font-medium">{p.person.name}</span>
+                        <span className="text-[11.5px] text-ink-3">· {p.person.contextNote}</span>
                       </div>
                       <ol className="space-y-1">
                         {p.escalation.map((e, i) => (
-                          <li key={i} className="flex gap-2 text-[11.5px]">
-                            <span className="mono text-[10.5px] text-ink-4 shrink-0 w-14">{e.at}</span>
-                            <span className="mono text-[10.5px] text-teal-2 shrink-0">{e.rule}</span>
+                          <li key={i} className="flex gap-2 text-[12px]">
+                            <span className="mono text-[11px] text-ink-4 shrink-0 w-14">{e.at}</span>
+                            <span className="mono text-[11px] text-teal-2 shrink-0">{e.rule}</span>
                             <span className="text-ink-2">{e.outcome}</span>
                           </li>
                         ))}
@@ -204,32 +204,32 @@ function ResponseCard({ r, onOpen }: { r: CitizenResponse; onOpen: () => void })
     <div className="px-4 py-3">
       <div className="flex items-center gap-2.5">
         <Avatar person={ps.person} size={28} />
-        <button onClick={onOpen} className="text-[12.5px] font-medium hover:underline">
+        <button onClick={onOpen} className="text-[13px] font-medium hover:underline">
           {ps.person.name}
         </button>
-        <span className="text-[10.5px] text-ink-4 mono">{r.at}</span>
-        <span className="text-[10.5px] text-ink-4">{channelLabel(r.channel)}</span>
+        <span className="text-[11px] text-ink-4 mono">{r.at}</span>
+        <span className="text-[11px] text-ink-4">{channelLabel(r.channel)}</span>
         <Badge tone={CATEGORY[c.category].tone} className="ml-auto">
           {CATEGORY[c.category].label}
         </Badge>
       </div>
       <div className="mt-2 rounded-xl rounded-tl-sm bg-white/[0.04] border border-line px-3 py-2">
-        {r.lang === "ar" ? <Arabic className="text-[13.5px] text-ink">{r.text}</Arabic> : <p className="text-[12.5px] text-ink leading-5">{r.text}</p>}
+        {r.lang === "ar" ? <Arabic className="text-[13.5px] text-ink">{r.text}</Arabic> : <p className="text-[13px] text-ink leading-5">{r.text}</p>}
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
         <LayerTag layer="ai" />
-        <span className="text-[11px] text-ink-3">
+        <span className="text-[11.5px] text-ink-3">
           urgency {c.urgency}/5 · {Math.round(c.confidence * 100)}%
         </span>
         {c.entities.map((e) => (
-          <span key={e} className="rounded-md bg-white/[0.05] border border-line px-1.5 py-0.5 text-[10.5px] text-ink-2">
+          <span key={e} className="rounded-md bg-white/[0.05] border border-line px-1.5 py-0.5 text-[11px] text-ink-2">
             {e}
           </span>
         ))}
       </div>
       {reply && step >= 7 && (
-        <div className="mt-2 ml-6 rounded-xl rounded-tr-sm bg-brand/[0.08] border border-brand/25 px-3 py-2 text-[12px] text-ink">
-          <div className="text-[10.5px] text-brand-2 mb-0.5 flex items-center gap-1.5">
+        <div className="mt-2 ml-6 rounded-xl rounded-tr-sm bg-brand/[0.08] border border-brand/25 px-3 py-2 text-[12.5px] text-ink">
+          <div className="text-[11px] text-brand-2 mb-0.5 flex items-center gap-1.5">
             Operator reply · {clockAt(reply.sec)} <Badge tone="violet">AI draft · approved</Badge>
           </div>
           {r.lang === "ar" ? <Arabic>{reply.textAr}</Arabic> : reply.text}

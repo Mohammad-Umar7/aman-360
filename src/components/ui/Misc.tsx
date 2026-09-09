@@ -14,7 +14,7 @@ export function Segmented<T extends string>({ value, onChange, options, size = "
           onClick={() => onChange(o.value)}
           className={cn(
             "rounded-md font-medium transition-colors whitespace-nowrap",
-            size === "xs" ? "px-2 h-6 text-[11px]" : "px-2.5 h-7 text-[12px]",
+            size === "xs" ? "px-2 h-6 text-[11.5px]" : "px-2.5 h-7 text-[12.5px]",
             value === o.value ? "bg-white/[0.1] text-ink shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]" : "text-ink-3 hover:text-ink-2",
           )}
         >
@@ -57,8 +57,8 @@ export function EmptyState({ icon, title, hint }: { icon?: ReactNode; title: str
   return (
     <div className="flex flex-col items-center justify-center text-center py-10 px-4 text-ink-3">
       {icon && <div className="mb-3 text-ink-4">{icon}</div>}
-      <div className="text-[13px] font-medium text-ink-2">{title}</div>
-      {hint && <div className="text-[12px] mt-1 max-w-[320px]">{hint}</div>}
+      <div className="text-[13.5px] font-medium text-ink-2">{title}</div>
+      {hint && <div className="text-[12.5px] mt-1 max-w-[320px]">{hint}</div>}
     </div>
   );
 }
@@ -66,8 +66,8 @@ export function EmptyState({ icon, title, hint }: { icon?: ReactNode; title: str
 export function Kv({ k, v, mono }: { k: string; v: ReactNode; mono?: boolean }) {
   return (
     <div className="flex items-baseline justify-between gap-4 py-1.5 border-b border-line last:border-0">
-      <span className="text-[12px] text-ink-3 shrink-0">{k}</span>
-      <span className={cn("text-[12.5px] text-ink text-right", mono && "mono text-[12px]")}>{v}</span>
+      <span className="text-[12.5px] text-ink-3 shrink-0">{k}</span>
+      <span className={cn("text-[13px] text-ink text-right", mono && "mono text-[12.5px]")}>{v}</span>
     </div>
   );
 }

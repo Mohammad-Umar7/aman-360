@@ -133,7 +133,7 @@ function Label({ ps, position, compact }: { ps: PersonState; position: [number, 
       <button
         onClick={() => selectPerson(ps.person.id)}
         className={cn(
-          "pointer-events-auto flex items-center gap-1.5 rounded-full border px-2 py-[3px] text-[11px] font-medium whitespace-nowrap shadow-[0_8px_24px_-8px_rgba(0,0,0,0.9)] backdrop-blur-md transition-transform hover:scale-105",
+          "pointer-events-auto flex items-center gap-1.5 rounded-full border px-2 py-[3px] text-[11.5px] font-medium whitespace-nowrap shadow-[0_8px_24px_-8px_rgba(0,0,0,0.9)] backdrop-blur-md transition-transform hover:scale-105",
           attention ? "bg-[#1a0f12]/90 border-alert/50 text-white" : "bg-[#0b1220]/85 border-white/15 text-ink",
         )}
         style={{ transform: "translateY(-6px)" }}
@@ -191,7 +191,7 @@ function ClosureLabel() {
   if (!visible) return null;
   return (
     <Html position={[(UNDERPASS.x0 + UNDERPASS.x1) / 2, 9, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
-      <div className="rounded-md border border-alert/60 bg-[#2a0f12]/90 px-2.5 py-1 text-[11px] font-semibold tracking-wider text-[#ffb3ae] whitespace-nowrap backdrop-blur-md">UNDERPASS CLOSED · FLOODING</div>
+      <div className="rounded-md border border-alert/60 bg-[#2a0f12]/90 px-2.5 py-1 text-[11.5px] font-semibold tracking-wider text-[#ffb3ae] whitespace-nowrap backdrop-blur-md">UNDERPASS CLOSED · FLOODING</div>
     </Html>
   );
 }
@@ -212,7 +212,7 @@ function AssemblyMarkers() {
             <meshBasicMaterial color="#2bb8a6" />
           </mesh>
           <Html position={[0, 4.4, 0]} center zIndexRange={[15, 0]} style={{ pointerEvents: "none" }}>
-            <div className="rounded-md border border-teal/40 bg-[#07201c]/85 px-2 py-0.5 text-[10.5px] text-teal-2 whitespace-nowrap backdrop-blur-md">{ap.name.split(" (")[0]}</div>
+            <div className="rounded-md border border-teal/40 bg-[#07201c]/85 px-2 py-0.5 text-[11px] text-teal-2 whitespace-nowrap backdrop-blur-md">{ap.name.split(" (")[0]}</div>
           </Html>
         </group>
       ))}
@@ -255,7 +255,7 @@ function AmbulanceLabel() {
   return (
     <group ref={ref}>
       <Html position={[0, 0, 0]} center zIndexRange={[25, 0]} style={{ pointerEvents: "none" }}>
-        <div className="rounded-md border border-alert/50 bg-[#2a0f12]/90 px-2 py-0.5 text-[10.5px] font-medium text-white whitespace-nowrap backdrop-blur-md">A-07 accessible ambulance · {done ? "on scene" : "en route"}</div>
+        <div className="rounded-md border border-alert/50 bg-[#2a0f12]/90 px-2 py-0.5 text-[11px] font-medium text-white whitespace-nowrap backdrop-blur-md">A-07 accessible ambulance · {done ? "on scene" : "en route"}</div>
       </Html>
     </group>
   );
@@ -266,22 +266,22 @@ function VmsLabel() {
   if (state.step.index < 5) return null;
   return (
     <Html position={[POI.vms.x, 13.5, -POI.vms.y - 1.5]} center zIndexRange={[12, 0]} style={{ pointerEvents: "none" }}>
-      <div className="rounded-md border border-brand/40 bg-[#0b1220]/85 px-2 py-0.5 text-[10.5px] text-brand-2 whitespace-nowrap backdrop-blur-md">VMS-07 · digital signage</div>
+      <div className="rounded-md border border-brand/40 bg-[#0b1220]/85 px-2 py-0.5 text-[11px] text-brand-2 whitespace-nowrap backdrop-blur-md">VMS-07 · digital signage</div>
     </Html>
   );
 }
 
-export function Overlays({ compact }: { compact?: boolean }) {
+export function Overlays({ compact, labels = true }: { compact?: boolean; labels?: boolean }) {
   return (
     <>
       <HazardZone />
       <Routes />
-      <ClosureLabel />
-      <PeopleLabels compact={compact} />
-      <AssemblyMarkers />
+      {labels && <ClosureLabel />}
+      {labels && <PeopleLabels compact={compact} />}
+      {labels && <AssemblyMarkers />}
       <HelpBeacon />
-      <AmbulanceLabel />
-      {!compact && <VmsLabel />}
+      {labels && <AmbulanceLabel />}
+      {labels && !compact && <VmsLabel />}
     </>
   );
 }

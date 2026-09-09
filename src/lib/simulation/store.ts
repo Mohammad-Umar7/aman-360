@@ -70,19 +70,17 @@ export function useScenario(): ScenarioState {
   return useMemo(() => buildScenario(step), [step]);
 }
 
-/** Mount once: drives autoplay with requestAnimationFrame. */
+/** Mount once: drives autoplay on a wall-clock timer (keeps advancing even when frames are throttled). */
 export function useSimulationClock() {
   useEffect(() => {
-    let raf = 0;
     let last = performance.now();
-    const loop = (now: number) => {
-      const dt = Math.min(0.1, (now - last) / 1000);
+    const id = window.setInterval(() => {
+      const now = performance.now();
+      const dt = Math.min(0.25, (now - last) / 1000);
       last = now;
       useSim.getState().tick(dt);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    }, 40);
+    return () => window.clearInterval(id);
   }, []);
 }
 
