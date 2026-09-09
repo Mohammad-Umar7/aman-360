@@ -88,6 +88,10 @@ Open http://localhost:3000. The landing page links into the command centre.
 
 Keyboard shortcuts inside the command centre: **Space** play / pause, **→ / ←** next / previous step, **0–8** jump to a step, **R** reset. The EN / AR toggle switches every message preview.
 
+Deep links for demos: `/command/twin?step=6&cam=overview`, `?step=2&cam=underpass`, `?step=8&cam=hospital`, `?step=0&cam=corniche&play=1` (cameras: auto, overview, underpass, closure, impact, residence, hospital, corniche, follow). Add `&debug=1` for on-screen renderer diagnostics.
+
+The twin is a living district, not only a flood: boulevard traffic that slows in the rain, pedestrians on the Corniche, drifting boats, birds, a waving UAE flag, cycling traffic signals, lightning during the storm, a medevac helicopter that lands on the medical-centre helipad during dispatch, a Civil Defence unit, a cell-broadcast tower that pulses when messages go out, a live drainage sensor, and an environment panel with rainfall, wind and underpass water level. The **Layers** menu in the twin toggles hazard, routes, people, units, sensors and activity.
+
 Production build:
 
 ```bash
