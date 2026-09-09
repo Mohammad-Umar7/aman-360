@@ -15,9 +15,11 @@ AMAN 360 is a government-grade prototype of a last-mile emergency communication 
 
 The prototype demonstrates one complete end-to-end scenario — a **flash flood in an urban underpass** — through an operator command platform and an interactive 3D digital twin built in Blender.
 
-| Digital twin (Blender render) | Flooded underpass, closure deployed | Medical centre, dispatch origin |
+| Digital twin (Blender render) | Flooded underpass, closure deployed | Corniche waterfront and skyline |
 | --- | --- | --- |
-| ![District overview](public/renders/district_overview.png) | ![Flooded underpass](public/renders/underpass_flooded.png) | ![Medical centre](public/renders/hospital_response.png) |
+| ![District overview](public/renders/district_overview.png) | ![Flooded underpass](public/renders/underpass_flooded.png) | ![Corniche](public/renders/corniche_waterfront.png) |
+
+The district is an Abu Dhabi-style synthetic district: curved and twisted glass towers on the skyline, arcaded mid-rise residences with balconies and merlons, Emirati villas with wind towers, a Grand-Mosque-style complex, a medical centre, landscaped boulevards, and the Corniche with its promenade, pier and sea. In the web twin the flood water is rendered as a turbid, rippling surface with rain rings, foam and drifting debris.
 
 ---
 

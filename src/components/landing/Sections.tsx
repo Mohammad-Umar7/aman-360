@@ -158,7 +158,7 @@ export function Twin() {
   const shots = [
     { src: "/renders/district_overview.png", cap: "Al Majaz district — normal operations" },
     { src: "/renders/underpass_flooded.png", cap: "Underpass flooded, closure and patrol deployed" },
-    { src: "/renders/hospital_response.png", cap: "Al Majaz Medical Centre — dispatch origin" },
+    { src: "/renders/corniche_waterfront.png", cap: "Corniche waterfront and the skyline cluster" },
   ];
   return (
     <section className="py-24 border-t border-line">
@@ -168,7 +168,7 @@ export function Twin() {
             <Eyebrow>Digital twin</Eyebrow>
             <h2 className="text-[34px] md:text-[40px] font-semibold tracking-tight leading-tight max-w-[760px]">A district built to tell the story, not just to look good.</h2>
           </div>
-          <p className="text-[15px] text-ink-2 max-w-[440px] leading-relaxed">Procedurally generated in Blender — roads, the sunken underpass, residences with Gulf architectural cues, a medical centre, mosque, signage and vehicles — with the water rise animated in Blender and scrubbed live by the simulation.</p>
+          <p className="text-[15px] text-ink-2 max-w-[440px] leading-relaxed">Procedurally generated in Blender — an Abu Dhabi-style district with glass towers, arcaded residences, villas with wind towers, a mosque complex, a medical centre, the Corniche and its waterfront, signage and traffic — with the water rise animated in Blender and scrubbed live by the simulation.</p>
         </div>
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
           {shots.map((s) => (
