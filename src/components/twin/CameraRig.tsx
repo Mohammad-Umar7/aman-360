@@ -62,10 +62,11 @@ export function CameraRig({ interactive, mode }: { interactive: boolean; mode?: 
 
   useFrame((st, dt) => {
     if (mode === "orbit") {
-      const a = st.clock.getElapsedTime() * 0.045 - 2.4;
-      const r = 235;
-      camera.position.set(Math.cos(a) * r, 96, Math.sin(a) * r);
-      camera.lookAt(8, 4, 0);
+      // slow orbit above the skyline so the whole district stays in frame
+      const a = st.clock.getElapsedTime() * 0.04 - 2.2;
+      const r = 320;
+      camera.position.set(Math.cos(a) * r, 150, Math.sin(a) * r + 40);
+      camera.lookAt(8, 12, 0);
       return;
     }
     const { step, t, camera: preset } = useSim.getState();
