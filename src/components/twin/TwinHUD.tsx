@@ -66,13 +66,15 @@ export function TwinHUD({ compact }: { compact?: boolean }) {
   return (
     <>
       <div className={cn("pointer-events-none absolute inset-0 z-10 flex flex-col justify-between", compact ? "p-3" : "p-5")}>
-        <div className="flex items-start justify-between gap-4">
-          <div className="pointer-events-auto glass rounded-xl px-4 py-3 flex items-start gap-3">
-            <div className="mt-0.5">
-              <LayerTag layer={state.step.layer} />
+        <div className={cn("flex items-start gap-4", compact ? "justify-end" : "justify-between")}>
+          {!compact && (
+            <div className="pointer-events-auto glass rounded-xl px-4 py-3 flex items-start gap-3">
+              <div className="mt-0.5">
+                <LayerTag layer={state.step.layer} />
+              </div>
+              <Caption />
             </div>
-            <Caption />
-          </div>
+          )}
           <div className="pointer-events-auto flex items-center gap-2">
             <div className="glass rounded-lg px-2 py-1 flex items-center gap-2">
               <Camera size={13} className="text-ink-3" />
@@ -82,7 +84,15 @@ export function TwinHUD({ compact }: { compact?: boolean }) {
         </div>
 
         <div className="flex items-end justify-between gap-4">
-          <div className="pointer-events-auto flex gap-2">
+          {compact && (
+            <div className="pointer-events-auto glass rounded-xl px-4 py-2.5 flex items-start gap-3 max-w-[70%]">
+              <div className="mt-0.5">
+                <LayerTag layer={state.step.layer} />
+              </div>
+              <Caption />
+            </div>
+          )}
+          <div className={cn("pointer-events-auto flex gap-2", compact && "hidden")}>
             {[
               { label: "Affected", value: k.affected, tone: "#f2b544" },
               { label: "Reached", value: k.reached, tone: "#4f8df7" },

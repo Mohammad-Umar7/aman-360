@@ -25,7 +25,7 @@ export default function OverviewPage() {
       <div className="grid grid-cols-12 gap-5">
         <Panel
           className="col-span-12 xl:col-span-8 min-h-[520px]"
-          title="Al Majaz district — operational map"
+          title="Al Majaz district — digital twin"
           eyebrow="Situation"
           padded={false}
           actions={
