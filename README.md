@@ -15,6 +15,10 @@ AMAN 360 is a government-grade prototype of a last-mile emergency communication 
 
 The prototype demonstrates one complete end-to-end scenario — a **flash flood in an urban underpass** — through an operator command platform and an interactive 3D digital twin built in Blender.
 
+| Digital twin (Blender render) | Flooded underpass, closure deployed | Medical centre, dispatch origin |
+| --- | --- | --- |
+| ![District overview](public/renders/district_overview.png) | ![Flooded underpass](public/renders/underpass_flooded.png) | ![Medical centre](public/renders/hospital_response.png) |
+
 ---
 
 ## Product architecture

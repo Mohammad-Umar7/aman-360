@@ -52,7 +52,7 @@ export function buildScenario(stepIndex: number): ScenarioState {
   const now = step.offsetSec;
   const clock = clockAt(now);
 
-  const claims: SourceClaim[] = s >= 1 ? CLAIMS.map(({ receivedSec: _r, ...c }) => c) : [];
+  const claims: SourceClaim[] = s >= 1 ? CLAIMS.map((c) => stripReceived(c)) : [];
   const contradictions = s >= 2 ? detectContradictions(claims, clockAt(232)) : [];
   const facts = s >= 2 ? verifyFacts(claims, contradictions, clockAt(235)) : [];
   const hazard = s >= 1 ? HAZARD : undefined;
@@ -155,9 +155,16 @@ function buildDeliveries(person: Person, impact: ImpactAssessment, message: Mess
   return out;
 }
 
+function stripReceived(c: (typeof CLAIMS)[number]): SourceClaim {
+  const copy: SourceClaim & { receivedSec?: number } = { ...c };
+  delete copy.receivedSec;
+  return copy;
+}
+
 function buildResponse(person: Person, sc: PersonScript): CitizenResponse {
   const r = sc.response!;
-  const { ai: _ai, ...classification } = classifyResponse(r.text, r.lang, r.hint);
+  const result = classifyResponse(r.text, r.lang, r.hint);
+  const classification = { category: result.category, confidence: result.confidence, urgency: result.urgency, entities: result.entities, summary: result.summary };
   return {
     id: `rsp-${person.id}`,
     personId: person.id,

@@ -274,8 +274,8 @@ def make_materials():
     mat('Barrier_White', '#F2F2F0', rough=0.6)
     mat('Sign_Blue', '#1C4E9C', rough=0.6)
     mat('Screen', '#0B1220', emit='#0B1220', emit_strength=1.0, rough=0.3)
-    mat('Water', '#3E6266', rough=0.08, metal=0.0, alpha=0.8, spec=1.0)
-    mat('Water_Murky', '#3F5A4C', rough=0.1, alpha=0.86, spec=0.9)
+    mat('Water', '#2F5256', rough=0.06, metal=0.0, alpha=0.9, spec=1.0)
+    mat('Water_Murky', '#2B4340', rough=0.05, alpha=0.95, spec=1.0)
     mat('Bench', '#6B4F3A', rough=0.8)
     mat('Helipad', '#5B6068', rough=0.9)
 

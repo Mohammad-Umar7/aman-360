@@ -39,7 +39,7 @@ export function assessPerson(person: Person, ctx: ImpactContext): ImpactAssessme
 
   // R-02 — route intersects closed segment
   let routeHit = false;
-  let route = person.route ? evaluateRoute(person.location, person.route, closed, ctx.hazard.polygon) : undefined;
+  const route = person.route ? evaluateRoute(person.location, person.route, closed, ctx.hazard.polygon) : undefined;
   if (person.route) {
     for (const edgeId of ctx.closedEdges) {
       const e = edgeById(edgeId);

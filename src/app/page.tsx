@@ -1,5 +1,5 @@
 import { Hero } from "@/components/landing/Hero";
-import { Answers, Channels, Footer, Future, Layers, Privacy, Storyline } from "@/components/landing/Sections";
+import { Answers, Channels, Footer, Future, Layers, Privacy, Storyline, Twin } from "@/components/landing/Sections";
 
 export default function LandingPage() {
   return (
@@ -8,6 +8,7 @@ export default function LandingPage() {
       <Answers />
       <Layers />
       <Storyline />
+      <Twin />
       <Channels />
       <Privacy />
       <Future />

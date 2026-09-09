@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
-import { ASSEMBLY_POINTS, BUILDINGS, FLOOD_POLYGON, LANE, MAP_EXTENT, POI, ROADS, UNDERPASS, nodeById } from "@/lib/data/district";
+import { ASSEMBLY_POINTS, BUILDINGS, FLOOD_POLYGON, MAP_EXTENT, POI, ROADS, UNDERPASS } from "@/lib/data/district";
 import { pointAlong, pointInPolygon } from "@/lib/engine/geometry";
 import { useSim } from "@/lib/simulation/store";
 import { AMBULANCE_PATH, ahmedVehicle, ambulanceVehicle, closureVisible, hazardVisible, TRAFFIC_KF } from "@/lib/simulation/visual";
@@ -48,11 +47,8 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
   const ambPos = pointAlong(amb.path, amb.progress);
   const hassanPos = pointAlong(TRAFFIC_KF.slice().reverse(), ((step * 0.11 + t * 0.1) % 1) * 0.9 + 0.05);
 
-  const positions = useMemo(() => {
-    const m = new Map<string, { x: number; y: number; heading?: number }>();
-    for (const p of state.people) m.set(p.person.id, p.person.location);
-    return m;
-  }, [state.people]);
+  const positions = new Map<string, { x: number; y: number; heading?: number }>();
+  for (const p of state.people) positions.set(p.person.id, p.person.location);
   positions.set("ahmed", { ...ahmedPos.p, heading: ahmedPos.heading });
   positions.set("hassan", { ...hassanPos.p, heading: hassanPos.heading });
 

@@ -154,6 +154,39 @@ export function Channels() {
   );
 }
 
+export function Twin() {
+  const shots = [
+    { src: "/renders/district_overview.png", cap: "Al Majaz district — normal operations" },
+    { src: "/renders/underpass_flooded.png", cap: "Underpass flooded, closure and patrol deployed" },
+    { src: "/renders/hospital_response.png", cap: "Al Majaz Medical Centre — dispatch origin" },
+  ];
+  return (
+    <section className="py-24 border-t border-line">
+      <Container>
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <Eyebrow>Digital twin</Eyebrow>
+            <h2 className="text-[34px] md:text-[40px] font-semibold tracking-tight leading-tight max-w-[760px]">A district built to tell the story, not just to look good.</h2>
+          </div>
+          <p className="text-[15px] text-ink-2 max-w-[440px] leading-relaxed">Procedurally generated in Blender — roads, the sunken underpass, residences with Gulf architectural cues, a medical centre, mosque, signage and vehicles — with the water rise animated in Blender and scrubbed live by the simulation.</p>
+        </div>
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {shots.map((s) => (
+            <figure key={s.src} className="panel overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={s.src} alt={s.cap} className="w-full aspect-video object-cover" loading="lazy" />
+              <figcaption className="px-4 py-3 text-[13px] text-ink-2">{s.cap}</figcaption>
+            </figure>
+          ))}
+        </div>
+        <div className="mt-6 flex items-center gap-2 text-[13px] text-ink-3">
+          <MapPinned size={14} className="text-teal-2" /> The same coordinates drive the 2D operational map, the 3D twin and every routing and polygon check.
+        </div>
+      </Container>
+    </section>
+  );
+}
+
 export function Privacy() {
   return (
     <section id="privacy" className="py-24 border-t border-line">

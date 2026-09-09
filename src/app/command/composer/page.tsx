@@ -29,7 +29,8 @@ export default function ComposerPage() {
   const pub = useMemo(() => publicVariants(state.facts), [state.facts]);
 
   const variants = isPublic ? pub : (selected?.message?.variants ?? []);
-  const checks = useMemo(() => (variants.length && state.facts.length ? checkChannels(variants, state.facts, state.clock, { webStale: step < 5 }) : []), [variants, state.facts, state.clock, step]);
+  // Cheap deterministic check — recomputed on every render on purpose.
+  const checks = variants.length && state.facts.length ? checkChannels(variants, state.facts, state.clock, { webStale: step < 5 }) : [];
 
   if (step < 4) {
     return (
