@@ -17,7 +17,10 @@ export const BASE_H = 0.18 + 0.25;
 export function buildingTop(id?: string): number {
   const b = buildingById(id);
   if (!b) return 8;
-  return BASE_H + b.floors * FLOOR_H + 1.2;
+  if (b.kind === "office") return BASE_H + 12.6 + b.floors * 3.6 + 6; // glass tower on a podium
+  if (b.kind === "hospital") return BASE_H + b.floors * 3.6 + 2;
+  if (b.kind === "mosque") return 28;
+  return BASE_H + 4.6 + (b.floors - 1) * FLOOR_H + 2.2;
 }
 
 export interface CamPose {

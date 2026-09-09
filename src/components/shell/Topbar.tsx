@@ -33,7 +33,7 @@ export function Topbar() {
               </Badge>
             )}
           </div>
-          <div className="text-[11.5px] text-ink-3 truncate">Al Majaz district · Sharjah (synthetic) · {INCIDENT_DATE}</div>
+          <div className="text-[11.5px] text-ink-3 truncate">Al Majaz district · Abu Dhabi (synthetic) · {INCIDENT_DATE}</div>
         </div>
         <Badge tone={st.tone} dot pulse={state.incidentStatus === "active"}>
           {st.label}

@@ -68,6 +68,10 @@ export const TRAFFIC_CO: Point[] = [
   { x: -146, y: P("C1").y - LANE },
   { x: 146, y: P("C1").y - LANE },
 ];
+export const TRAFFIC_KF_E: Point[] = [
+  { x: -146, y: P("K1").y - LANE },
+  { x: 146, y: P("K1").y - LANE },
+];
 
 export interface VehicleState {
   path: Point[];
@@ -102,3 +106,4 @@ export const hazardVisible = (step: number, t: number) => step >= 2 || (step ===
 export const policeVisible = (step: number, t: number) => step >= 2 || (step === 1 && t > 0.7);
 
 export const allNodes = NODES;
+

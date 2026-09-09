@@ -12,7 +12,7 @@ Point at the live 3D district behind the headline. Click **Run the flash-flood d
 
 Digital twin, camera on Auto. A calm district, six feeds connected, all KPIs at zero.
 
-**Say:** "A synthetic Sharjah-style district. Every person and location here is synthetic; a real deployment uses only institutional and consented data."
+**Say:** "A synthetic Abu Dhabi-style district. Every person and location here is synthetic; a real deployment uses only institutional and consented data."
 
 Press **Space** (or *Simulate flash flood*). Autoplay runs the whole storyline in about two minutes; pause with Space whenever you want to talk.
 

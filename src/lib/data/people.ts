@@ -68,7 +68,7 @@ export const PEOPLE: Person[] = [
     initials: "OK",
     age: 38,
     context: "office",
-    contextNote: "At work, Sharjah Business Tower, floor 11",
+    contextNote: "At work, Al Majaz Business Tower, floor 11",
     location: { x: 112, y: 34 },
     buildingId: "Bldg_Omar",
     language: "en",

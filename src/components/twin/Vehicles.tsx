@@ -7,11 +7,11 @@ import * as THREE from "three";
 import { DISTRICT_URL } from "@/components/twin/District";
 import { pointAlong } from "@/lib/engine/geometry";
 import { useSim } from "@/lib/simulation/store";
-import { ahmedVehicle, ambulanceVehicle, TRAFFIC_CO, TRAFFIC_KF } from "@/lib/simulation/visual";
+import { ahmedVehicle, ambulanceVehicle, TRAFFIC_CO, TRAFFIC_KF, TRAFFIC_KF_E } from "@/lib/simulation/visual";
 import type { Point } from "@/lib/types";
 
 function useClone(name: string) {
-  const { scene } = useGLTF(DISTRICT_URL);
+  const { scene } = useGLTF(DISTRICT_URL, "/draco/");
   return useMemo(() => {
     const src = scene.getObjectByName(name);
     if (!src) return null;
@@ -41,10 +41,12 @@ export function Vehicles() {
   const amb = useClone("Ambulance");
   const t1 = useClone("Car_Traffic_1");
   const t2 = useClone("Car_Traffic_2");
+  const t3 = useClone("Car_Traffic_3");
   const carRef = useRef<THREE.Group>(null);
   const ambRef = useRef<THREE.Group>(null);
   const t1Ref = useRef<THREE.Group>(null);
   const t2Ref = useRef<THREE.Group>(null);
+  const t3Ref = useRef<THREE.Group>(null);
   const lights = useRef<THREE.MeshStandardMaterial[]>([]);
 
   useEffect(() => {
@@ -80,6 +82,7 @@ export function Vehicles() {
     const speed = step >= 1 ? 0.018 : 0.035;
     place(t1Ref.current, TRAFFIC_KF, (time * speed) % 1);
     place(t2Ref.current, TRAFFIC_CO, (time * speed * 0.8 + 0.4) % 1);
+    place(t3Ref.current, TRAFFIC_KF_E, (time * speed * 0.55 + 0.2) % 1);
   });
 
   return (
@@ -104,6 +107,12 @@ export function Vehicles() {
           <primitive object={t2} />
         </group>
       )}
+      {t3 && (
+        <group ref={t3Ref}>
+          <primitive object={t3} />
+        </group>
+      )}
     </>
   );
 }
+

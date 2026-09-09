@@ -64,8 +64,8 @@ export function WebNotice({ variant, lang, stale }: { variant: ChannelVariant; l
     <div className="rounded-xl border border-line bg-[#f4f6fa] text-[#111827] overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-2 bg-white border-b border-black/10">
         <Globe size={13} className="text-[#1c4e9c]" />
-        <span className="text-[11.5px] font-semibold text-[#1c4e9c]">Sharjah Municipality · Roads & closures</span>
-        <span className="ml-auto text-[10.5px] text-[#6b7280]">portal.sharjah.gov (synthetic)</span>
+        <span className="text-[11.5px] font-semibold text-[#1c4e9c]">Abu Dhabi Municipality · Roads & closures</span>
+        <span className="ml-auto text-[10.5px] text-[#6b7280]">portal.abudhabi.gov (synthetic)</span>
       </div>
       <div className="p-3">
         {stale ? (

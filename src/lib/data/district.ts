@@ -19,9 +19,12 @@ export const ROADS: Road[] = [
   { id: "al-majaz", name: "Al Majaz Road", nameAr: "طريق المجاز", axis: "ew", offset: 0, width: 16 },
   { id: "king-faisal", name: "King Faisal Street", nameAr: "شارع الملك فيصل", axis: "ew", offset: 64, width: 14 },
   { id: "corniche", name: "Corniche Street", nameAr: "شارع الكورنيش", axis: "ew", offset: -64, width: 14 },
-  { id: "al-wahda", name: "Al Wahda Street", nameAr: "شارع الوحدة", axis: "ns", offset: -72, width: 12 },
-  { id: "al-arouba", name: "Al Arouba Street", nameAr: "شارع العروبة", axis: "ns", offset: 72, width: 12 },
+  { id: "al-wahda", name: "Al Wahda Street", nameAr: "شارع الوحدة", axis: "ns", offset: -72, width: 12, extent: [-70, 150] },
+  { id: "al-arouba", name: "Al Arouba Street", nameAr: "شارع العروبة", axis: "ns", offset: 72, width: 12, extent: [-70, 150] },
 ];
+
+/** Waterfront south of the Corniche (promenade, beach, sea). */
+export const WATERFRONT = { promenadeY: -71, beachY: -81, seaY: -88 };
 
 export const NODES: RoadNode[] = [
   { id: "AW", p: { x: -150, y: 0 } },
@@ -73,14 +76,14 @@ export const BUILDINGS: Building[] = [
   { id: "Bldg_S2", name: "Corniche View Apartments", nameAr: "شقق إطلالة الكورنيش", p: { x: 18, y: -34 }, w: 18, d: 18, floors: 8, kind: "residential", occupants: 170, registry: "building_management" },
   { id: "Bldg_N3", name: "Al Khan Apartments", nameAr: "شقق الخان", p: { x: -50, y: 34 }, w: 14, d: 14, floors: 5, kind: "residential", occupants: 70, registry: "building_management" },
   { id: "Bldg_N4", name: "Buhaira Court", nameAr: "بحيرة كورت", p: { x: 50, y: 34 }, w: 16, d: 16, floors: 6, kind: "residential", occupants: 90, registry: "building_management" },
-  { id: "Bldg_S3", name: "Al Majaz Community Hall", nameAr: "قاعة مجتمع المجاز", p: { x: -50, y: -36 }, w: 14, d: 14, floors: 4, kind: "community", occupants: 40, registry: "public" },
+  { id: "Bldg_S3", name: "Al Majaz Community Hall", nameAr: "قاعة مجتمع المجاز", p: { x: -50, y: -36 }, w: 18, d: 16, floors: 2, kind: "community", occupants: 40, registry: "public" },
   { id: "Bldg_S4", name: "Al Arouba Residence", nameAr: "مساكن العروبة", p: { x: 50, y: -36 }, w: 16, d: 16, floors: 5, kind: "residential", occupants: 80, registry: "building_management" },
-  { id: "Bldg_Omar", name: "Sharjah Business Tower", nameAr: "برج الشارقة للأعمال", p: { x: 112, y: 34 }, w: 26, d: 24, floors: 14, kind: "office", occupants: 620, registry: "employer" },
-  { id: "Bldg_NE2", name: "Community Clinic", nameAr: "العيادة المجتمعية", p: { x: 88, y: 40 }, w: 12, d: 12, floors: 4, kind: "clinic", occupants: 35, registry: "public" },
-  { id: "Hospital", name: "Al Majaz Medical Centre", nameAr: "مركز المجاز الطبي", p: { x: 110, y: -34 }, w: 40, d: 26, floors: 5, kind: "hospital", occupants: 310, registry: "public" },
-  { id: "Mosque", name: "Al Wahda Mosque", nameAr: "مسجد الوحدة", p: { x: -110, y: -34 }, w: 30, d: 24, floors: 2, kind: "mosque", occupants: 60, registry: "public" },
-  { id: "Bldg_NW1", name: "Al Wahda Residence", nameAr: "مساكن الوحدة", p: { x: -112, y: 34 }, w: 22, d: 18, floors: 6, kind: "residential", occupants: 120, registry: "building_management" },
-  { id: "Bldg_NW2", name: "Al Wahda Retail Centre", nameAr: "مركز الوحدة التجاري", p: { x: -112, y: 12 }, w: 16, d: 10, floors: 3, kind: "retail", occupants: 45, registry: "public" },
+  { id: "Bldg_Omar", name: "Al Majaz Business Tower", nameAr: "برج المجاز للأعمال", p: { x: 112, y: 34 }, w: 31, d: 26, floors: 24, kind: "office", occupants: 620, registry: "employer" },
+  { id: "Bldg_NE2", name: "Community Clinic", nameAr: "العيادة المجتمعية", p: { x: 86, y: 22 }, w: 12, d: 12, floors: 4, kind: "clinic", occupants: 35, registry: "public" },
+  { id: "Hospital", name: "Al Majaz Medical Centre", nameAr: "مركز المجاز الطبي", p: { x: 110, y: -34 }, w: 46, d: 26, floors: 7, kind: "hospital", occupants: 310, registry: "public" },
+  { id: "Mosque", name: "Al Wahda Mosque", nameAr: "مسجد الوحدة", p: { x: -110, y: -32 }, w: 62, d: 38, floors: 2, kind: "mosque", occupants: 60, registry: "public" },
+  { id: "Bldg_NW1", name: "Al Wahda Villas", nameAr: "فلل الوحدة", p: { x: -112, y: 33 }, w: 56, d: 24, floors: 2, kind: "residential", occupants: 24, registry: "building_management" },
+  { id: "Bldg_NW2", name: "Al Majaz Retail Centre", nameAr: "مركز المجاز التجاري", p: { x: 139, y: 22 }, w: 16, d: 12, floors: 3, kind: "retail", occupants: 45, registry: "public" },
 ];
 
 export const ASSEMBLY_POINTS: AssemblyPoint[] = [

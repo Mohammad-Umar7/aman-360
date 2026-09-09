@@ -14,7 +14,7 @@ function caption(step: number, t: number): { title: string; sub: string } {
     case 0:
       return { title: "Al Majaz district · normal operations", sub: "All feeds nominal. Registered residents and road users go about their day." };
     case 1:
-      if (t < 0.4) return { title: "Convective rain begins", sub: "NCM orange alert: 40–60 mm/h over Sharjah central districts." };
+      if (t < 0.4) return { title: "Convective rain begins", sub: "NCM orange alert: 40–60 mm/h over Abu Dhabi central districts." };
       if (t < 0.75) return { title: "Water accumulating in the underpass", sub: "Drainage sensor UP-07 at capacity · municipality GIS activates hazard polygon FZ-0912." };
       return { title: "Police close the underpass", sub: "Patrol 4-12 deploys barriers · closure feed received." };
     case 2:

@@ -39,6 +39,8 @@ export interface Road {
   axis: "ew" | "ns";
   offset: number; // y for ew roads, x for ns roads
   width: number;
+  /** drawn extent along the road axis (defaults to the full map) */
+  extent?: [number, number];
 }
 
 export type BuildingKind = "residential" | "office" | "hospital" | "mosque" | "community" | "retail" | "clinic";

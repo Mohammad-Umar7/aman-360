@@ -12,7 +12,7 @@ export const ACTIONS: Record<ActionCode, ApprovedAction> = {
     title: "Reroute via verified alternative",
     titleAr: "تغيير المسار عبر بديل موثّق",
     summary: "Road user is directed to a verified alternative route that avoids closed segments and the active hazard polygon.",
-    approvedBy: "Civil Defence Command",
+    approvedBy: "Abu Dhabi Civil Defence",
   },
   SHELTER_IN_PLACE: {
     code: "SHELTER_IN_PLACE",
@@ -20,7 +20,7 @@ export const ACTIONS: Record<ActionCode, ApprovedAction> = {
     title: "Shelter in place",
     titleAr: "البقاء في المكان",
     summary: "Person indoors within the hazard polygon remains inside and avoids driving until roads are reopened.",
-    approvedBy: "Civil Defence Command",
+    approvedBy: "Abu Dhabi Civil Defence",
   },
   OFFER_ASSISTANCE: {
     code: "OFFER_ASSISTANCE",
@@ -28,7 +28,7 @@ export const ACTIONS: Record<ActionCode, ApprovedAction> = {
     title: "Offer accessible assistance",
     titleAr: "تقديم مساعدة ميسّرة",
     summary: "Person with mobility or communication needs inside the hazard polygon is offered assistance with a one-tap request path.",
-    approvedBy: "Civil Defence Command",
+    approvedBy: "Abu Dhabi Civil Defence",
   },
   AVOID_AREA: {
     code: "AVOID_AREA",
@@ -36,7 +36,7 @@ export const ACTIONS: Record<ActionCode, ApprovedAction> = {
     title: "Move away to a safe assembly point",
     titleAr: "الابتعاد إلى نقطة تجمّع آمنة",
     summary: "Person outdoors inside the hazard polygon moves to the nearest safe assembly point reachable without crossing a closed segment.",
-    approvedBy: "Civil Defence Command",
+    approvedBy: "Abu Dhabi Civil Defence",
   },
   NO_ACTION: {
     code: "NO_ACTION",

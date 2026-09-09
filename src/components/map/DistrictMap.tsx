@@ -1,6 +1,6 @@
 "use client";
 
-import { ASSEMBLY_POINTS, BUILDINGS, FLOOD_POLYGON, MAP_EXTENT, POI, ROADS, UNDERPASS } from "@/lib/data/district";
+import { ASSEMBLY_POINTS, BUILDINGS, FLOOD_POLYGON, MAP_EXTENT, POI, ROADS, UNDERPASS, WATERFRONT } from "@/lib/data/district";
 import { pointAlong, pointInPolygon } from "@/lib/engine/geometry";
 import { useSim } from "@/lib/simulation/store";
 import { AMBULANCE_PATH, ahmedVehicle, ambulanceVehicle, closureVisible, hazardVisible, TRAFFIC_KF } from "@/lib/simulation/visual";
@@ -80,6 +80,15 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
         </defs>
         <rect x={-E} y={-E} width={2 * E} height={2 * E} fill="#0a1120" />
         <rect x={-E} y={-E} width={2 * E} height={2 * E} fill="url(#mgrid)" />
+        {/* waterfront: promenade, beach, sea */}
+        <rect x={-E} y={-WATERFRONT.promenadeY} width={2 * E} height={WATERFRONT.promenadeY - WATERFRONT.beachY} fill="rgba(148,163,184,0.08)" />
+        <rect x={-E} y={-WATERFRONT.beachY} width={2 * E} height={WATERFRONT.beachY - WATERFRONT.seaY} fill="rgba(242,181,68,0.08)" />
+        <rect x={-E} y={-WATERFRONT.seaY} width={2 * E} height={E + WATERFRONT.seaY} fill="rgba(28,108,140,0.28)" />
+        {!compact && (
+          <text x={E - 6} y={-WATERFRONT.seaY + 14} fontSize={4.6} fill="rgba(127,224,210,0.7)" textAnchor="end" letterSpacing={1}>
+            ARABIAN GULF
+          </text>
+        )}
 
         {/* blocks */}
         {BUILDINGS.map((b) => {
@@ -120,8 +129,8 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
             </g>
           ) : (
             <g key={r.id}>
-              <rect x={r.offset - r.width / 2} y={-E} width={r.width} height={2 * E} fill="#1a2436" />
-              <line x1={r.offset} x2={r.offset} y1={-E} y2={E} stroke="rgba(232,238,247,0.22)" strokeWidth={0.5} strokeDasharray="4 3" />
+              <rect x={r.offset - r.width / 2} y={-(r.extent?.[1] ?? E)} width={r.width} height={(r.extent?.[1] ?? E) - (r.extent?.[0] ?? -E)} fill="#1a2436" />
+              <line x1={r.offset} x2={r.offset} y1={-(r.extent?.[1] ?? E)} y2={-(r.extent?.[0] ?? -E)} stroke="rgba(232,238,247,0.22)" strokeWidth={0.5} strokeDasharray="4 3" />
               {!compact && (
                 <text x={r.offset + r.width / 2 + 2} y={E - 100} fontSize={4.2} fill="rgba(169,181,199,0.8)" transform={`rotate(-90 ${r.offset + r.width / 2 + 2} ${E - 100})`}>
                   {r.name}
