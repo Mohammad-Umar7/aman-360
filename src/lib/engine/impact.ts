@@ -13,9 +13,9 @@
  */
 
 import { ASSEMBLY_POINTS, edgeById, nodeById, roadById } from "@/lib/data/district";
-import { dist, pointInPolygon, polylineTouchesSegment } from "@/lib/engine/geometry";
+import { dist, pointInPolygon, segmentsIntersect } from "@/lib/engine/geometry";
 import { evaluateRoute } from "@/lib/engine/routing";
-import type { ActionCode, Channel, HazardEvent, ImpactAssessment, Person, RuleTrace, Severity } from "@/lib/types";
+import type { ActionCode, Channel, HazardEvent, ImpactAssessment, Person, Point, RuleTrace, Severity } from "@/lib/types";
 
 export interface ImpactContext {
   hazard: HazardEvent;
@@ -37,29 +37,27 @@ export function assessPerson(person: Person, ctx: ImpactContext): ImpactAssessme
       : `Point (${person.location.x}, ${person.location.y}) is outside ${ctx.hazard.id}.`,
   });
 
-  // R-02 — route intersects closed segment
-  let routeHit = false;
+  // R-02 — the planned route uses a closed segment or drives into the hazard polygon.
+  // Edge membership (the same test the router uses) — not geometric touching, which
+  // would flag a route that merely ends at the closure mouth.
   const route = person.route ? evaluateRoute(person.location, person.route, closed, ctx.hazard.polygon) : undefined;
-  if (person.route) {
-    for (const edgeId of ctx.closedEdges) {
-      const e = edgeById(edgeId);
-      if (polylineTouchesSegment(route!.original, nodeById(e.from).p, nodeById(e.to).p)) routeHit = true;
-    }
-  }
+  const routeHit = !!route?.blockedEdgeId;
+  const blockedRoad = route?.blockedEdgeId ? roadById(edgeById(route.blockedEdgeId).road).name : undefined;
   rules.push({
     rule: "R-02",
-    title: "Planned route touches a closed segment",
+    title: "Planned route uses a closed segment or enters the hazard polygon",
     fired: routeHit,
     detail: person.route
       ? routeHit
-        ? `Route ${person.route.join(" → ")} crosses ${ctx.closedEdges.map((id) => roadById(edgeById(id).road).name).join(", ")} (closed).`
-        : `Route ${person.route.join(" → ")} does not touch any closed segment.`
+        ? `Route ${person.route.join(" → ")} uses ${blockedRoad} (${route?.blockReason === "hazard" ? `inside ${ctx.hazard.id}` : "closed"}).`
+        : `Route ${person.route.join(" → ")} uses no closed segment and stays outside ${ctx.hazard.id}.`
       : "No active route (not travelling).",
   });
 
   const affected = inZone || routeHit;
   let action: ActionCode = "NO_ACTION";
   let severity: Severity = "none";
+  let decidedBy = "R-05";
   let assemblyPointId: string | undefined;
 
   // R-03 — reroute
@@ -77,6 +75,7 @@ export function assessPerson(person: Person, ctx: ImpactContext): ImpactAssessme
   if (routeHit) {
     action = canReroute ? "REROUTE" : "SHELTER_IN_PLACE";
     severity = "medium";
+    decidedBy = "R-03";
   }
 
   // R-04 — shelter in place
@@ -86,27 +85,41 @@ export function assessPerson(person: Person, ctx: ImpactContext): ImpactAssessme
     rule: "R-04",
     title: "In zone and indoors → shelter in place",
     fired: shelter,
-    detail: shelter ? `${person.contextNote}. Building is above modelled water level; remaining indoors is the approved action.` : inZone ? "Person is outdoors." : "Not in zone.",
+    detail: shelter ? `${person.contextNote}. Remaining indoors on an upper floor is the approved action (SOP-FF-03); no movement through flooded streets.` : inZone ? "Person is outdoors." : "Not in zone.",
   });
   if (shelter) {
     action = "SHELTER_IN_PLACE";
     severity = "medium";
+    decidedBy = "R-04";
   }
 
   // R-07 — outdoors in zone → avoid area
   const outdoorsInZone = inZone && !indoors;
   if (outdoorsInZone) {
-    const candidates = ASSEMBLY_POINTS.filter((ap) => !pointInPolygon(ap.p, ctx.hazard.polygon)).filter((ap) => person.accessibility.mobility === "standard" || ap.accessible);
+    // SOP-FF-03: nearest safe point reachable without crossing a closed segment.
+    const crossesClosure = (to: Point) => ctx.closedEdges.some((id) => {
+      const e = edgeById(id);
+      return segmentsIntersect(person.location, to, nodeById(e.from).p, nodeById(e.to).p);
+    });
+    const candidates = ASSEMBLY_POINTS.filter((ap) => !pointInPolygon(ap.p, ctx.hazard.polygon))
+      .filter((ap) => person.accessibility.mobility === "standard" || ap.accessible)
+      .filter((ap) => !crossesClosure(ap.p));
     const nearest = candidates.sort((a, b) => dist(a.p, person.location) - dist(b.p, person.location))[0];
     assemblyPointId = nearest?.id;
     action = "AVOID_AREA";
     severity = "high";
+    decidedBy = "R-07";
   }
+  const nearestName = ASSEMBLY_POINTS.find((a) => a.id === assemblyPointId)?.name;
   rules.push({
     rule: "R-07",
     title: "In zone and outdoors → move to safe assembly point",
     fired: outdoorsInZone,
-    detail: outdoorsInZone ? `Nearest assembly point outside ${ctx.hazard.id}: ${ASSEMBLY_POINTS.find((a) => a.id === assemblyPointId)?.name}.` : "Not applicable.",
+    detail: outdoorsInZone
+      ? nearestName
+        ? `Nearest assembly point outside ${ctx.hazard.id} reachable without crossing a closed segment: ${nearestName}.`
+        : `No assembly point outside ${ctx.hazard.id} is reachable without crossing a closed segment — operator to direct.`
+      : "Not applicable.",
   });
 
   // R-06 — accessibility need
@@ -122,6 +135,7 @@ export function assessPerson(person: Person, ctx: ImpactContext): ImpactAssessme
   if (needsAssist) {
     action = "OFFER_ASSISTANCE";
     severity = "high";
+    decidedBy = "R-06";
   }
 
   // R-05 — no impact
@@ -146,6 +160,7 @@ export function assessPerson(person: Person, ctx: ImpactContext): ImpactAssessme
     affected,
     severity,
     action,
+    decidedBy,
     rules,
     route,
     assemblyPointId,
@@ -169,7 +184,7 @@ export function selectChannels(person: Person): Channel[] {
 function reasonFor(person: Person, r: { inZone: boolean; routeHit: boolean; action: ActionCode }): string {
   if (r.action === "NO_ACTION") return "Outside the impact area — no alert issued";
   if (r.action === "REROUTE") return "Active route crosses the closed underpass";
-  if (r.action === "OFFER_ASSISTANCE") return `Inside the hazard polygon with ${person.accessibility.mobility === "wheelchair" ? "wheelchair" : "accessibility"} needs`;
+  if (r.action === "OFFER_ASSISTANCE") return `${r.inZone ? "Inside the hazard polygon" : "Route crosses the closure"} with ${person.accessibility.mobility === "wheelchair" ? "wheelchair" : "accessibility"} needs`;
   if (r.action === "AVOID_AREA") return "Outdoors inside the hazard polygon";
   return "Inside the hazard polygon (indoors)";
 }

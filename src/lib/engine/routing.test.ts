@@ -64,3 +64,20 @@ describe("scale helpers", () => {
     expect(minutesFor(125)).toBeCloseTo(6);
   });
 });
+
+describe("evaluateRoute — hazard polygon and data gaps", () => {
+  it("blocks a route that drives into the hazard polygon even when nothing is formally closed", () => {
+    const ahmed = personById("ahmed");
+    const r = evaluateRoute(ahmed.location, ahmed.route!, new Set(), HAZARD.polygon);
+    expect(r.blockReason).toBe("hazard");
+    expect(r.blockedEdgeId).toBe("am-approach-w");
+    expect(r.alternative).toBeDefined();
+  });
+  it("labels a formal closure as such", () => {
+    const ahmed = personById("ahmed");
+    expect(evaluateRoute(ahmed.location, ahmed.route!, closed, HAZARD.polygon).blockReason).toBe("closure");
+  });
+  it("refuses a planned route with a missing segment instead of silently dropping it", () => {
+    expect(() => evaluateRoute({ x: 0, y: 0 }, ["AW", "AE"], closed)).toThrow(/No road segment/);
+  });
+});

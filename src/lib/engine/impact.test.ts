@@ -81,3 +81,35 @@ describe("selectChannels", () => {
     expect(selectChannels(p)[0]).toBe("voice");
   });
 });
+
+describe("assessPerson — closures, reachability and the deciding rule", () => {
+  const driver = { ...personById("ahmed"), id: "x", location: { x: -104, y: -3.6 } };
+  it("does not treat a route that merely ends at the closure mouth as blocked", () => {
+    const a = assessPerson({ ...driver, route: ["AW", "A1", "AU1"] }, IMPACT_CONTEXT);
+    expect(a.affected).toBe(false);
+    expect(a.action).toBe("NO_ACTION");
+    expect(fired("omar", "R-02")).toBe(false);
+  });
+  it("names the rule that decided the action", () => {
+    expect(assess("ahmed").decidedBy).toBe("R-03");
+    expect(assess("fatima").decidedBy).toBe("R-04");
+    expect(assess("layla").decidedBy).toBe("R-07");
+    expect(assess("sara").decidedBy).toBe("R-06");
+    expect(assess("omar").decidedBy).toBe("R-05");
+  });
+  it("only sends pedestrians to assembly points reachable without crossing the closure", () => {
+    const north = { ...personById("layla"), location: { x: 20, y: 20 } };
+    const a = assessPerson(north, IMPACT_CONTEXT);
+    expect(a.action).toBe("AVOID_AREA");
+    expect(a.assemblyPointId).toBe("ap-clinic");
+    expect(a.rules.find((r) => r.rule === "R-07")?.detail).not.toMatch(/undefined/);
+  });
+  it("gives the right reason for a rerouted driver with accessibility needs", () => {
+    const a = assessPerson({ ...driver, accessibility: { mobility: "wheelchair", smartphone: true } }, IMPACT_CONTEXT);
+    expect(a.action).toBe("OFFER_ASSISTANCE");
+    expect(a.reason).toMatch(/^Route crosses the closure/);
+  });
+  it("never renders undefined in a rule trace", () => {
+    for (const p of PEOPLE) for (const r of assessPerson(p, IMPACT_CONTEXT).rules) expect(r.detail).not.toMatch(/undefined/);
+  });
+});

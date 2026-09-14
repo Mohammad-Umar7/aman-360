@@ -192,6 +192,8 @@ export interface RouteResult {
   original: Point[];
   alternative?: Point[];
   blockedEdgeId?: string;
+  /** Why the planned route is unusable: a formally closed segment, or a segment inside the active hazard polygon. */
+  blockReason?: "closure" | "hazard";
   viaRoads: string[];
   delayMinutes: number;
   originalKm: number;
@@ -205,6 +207,8 @@ export interface ImpactAssessment {
   affected: boolean;
   severity: Severity;
   action: ActionCode;
+  /** The rule whose outcome set the final action (later rules override earlier ones). */
+  decidedBy: string;
   rules: RuleTrace[];
   route?: RouteResult;
   assemblyPointId?: string;

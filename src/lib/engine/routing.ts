@@ -68,7 +68,8 @@ export const routeEdges = (nodeIds: string[]): RoadEdge[] => {
     const a = nodeIds[i - 1];
     const b = nodeIds[i];
     const e = EDGES.find((x) => (x.from === a && x.to === b) || (x.from === b && x.to === a));
-    if (e) out.push(e);
+    if (!e) throw new Error(`No road segment between ${a} and ${b}`);
+    out.push(e);
   }
   return out;
 };
@@ -83,18 +84,22 @@ export const minutesFor = (units: number) => (units * REAL_SCALE) / ((URBAN_SPEE
  */
 export function evaluateRoute(position: Point, plannedNodes: string[], closed: Set<string>, hazard?: Polygon): RouteResult {
   const planned = routeEdges(plannedNodes);
-  const blocked = planned.find((e) => closed.has(e.id));
   const original = [position, ...routeToPoints(plannedNodes.slice(1))];
   const originalKm = unitsToKm(polylineLength(original));
+  // A formally closed segment blocks the route; so does a segment that drives into the active hazard polygon.
+  const closedHit = planned.find((e) => closed.has(e.id));
+  const hazardHit = hazard ? planned.find((e) => polylineEntersPolygon(edgePoints(e), hazard)) : undefined;
+  const blocked = closedHit ?? hazardHit;
   if (!blocked) {
     return { original, viaRoads: uniqueRoads(planned), delayMinutes: 0, originalKm };
   }
+  const blockReason: RouteResult["blockReason"] = closedHit ? "closure" : "hazard";
   // Re-plan from the next node ahead of the vehicle to the destination.
   const nextNode = plannedNodes[1];
   const destination = plannedNodes[plannedNodes.length - 1];
   const alt = shortestPath(nextNode, destination, closed, hazard);
   if (!alt) {
-    return { original, blockedEdgeId: blocked.id, viaRoads: uniqueRoads(planned), delayMinutes: 0, originalKm };
+    return { original, blockedEdgeId: blocked.id, blockReason, viaRoads: uniqueRoads(planned), delayMinutes: 0, originalKm };
   }
   const alternative = [position, ...routeToPoints(alt.nodes)];
   const altUnits = polylineLength(alternative);
@@ -103,6 +108,7 @@ export function evaluateRoute(position: Point, plannedNodes: string[], closed: S
     original,
     alternative,
     blockedEdgeId: blocked.id,
+    blockReason,
     viaRoads: uniqueRoads(alt.edges),
     delayMinutes: Math.round(minutesFor(Math.max(0, altUnits - origUnits))),
     originalKm,
