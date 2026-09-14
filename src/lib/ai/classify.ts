@@ -9,7 +9,7 @@ import type { AiTrace, Classification, Lang, ResponseCategory } from "@/lib/type
 const LEX: Record<ResponseCategory, string[]> = {
   safe: ["safe", "ok", "fine", "got it", "taking", "بخير", "شكرا", "شكراً", "تمام", "وصلت"],
   help: ["help", "stuck", "can't", "cannot", "water is coming", "entering", "trapped", "مساعدة", "تدخل", "لا أستطيع", "محاصر"],
-  clarification: ["?", "should i", "can i", "is it", "هل", "ماذا", "كيف"],
+  clarification: ["?", "؟", "should i", "can i", "is it", "هل", "ماذا", "كيف"],
   different: ["actually", "i'm not", "i am not", "different", "at the bus", "waiting", "أنا في", "أنتظر"],
   none: [],
 };
@@ -22,19 +22,27 @@ const ENTITY_LEX: [RegExp, string][] = [
   [/bus|الحافلة|محطة/i, "at bus stop"],
   [/school|المدرسة|أطفال/i, "children at school"],
   [/king faisal|الملك فيصل/i, "King Faisal Street"],
-  [/son|ابني|alone|وحدي/i, "alone"],
+  [/\bmy son\b|\bson is\b|ابني|\balone\b|وحدي/i, "alone"],
 ];
+
+/** Latin keywords must match whole words ("ok" must not fire inside "broken"); Arabic keywords match as substrings because of clitics. */
+const matches = (lower: string, kw: string): boolean => {
+  if (!/^[a-z' ]+$/.test(kw)) return lower.includes(kw);
+  return new RegExp(`(^|[^a-z])${kw.replace(/'/g, "'?")}(?=$|[^a-z])`).test(lower);
+};
 
 export function classifyResponse(text: string, lang: Lang, hint?: ResponseCategory): Classification & { ai: AiTrace } {
   const lower = text.toLowerCase();
   const scores: Record<ResponseCategory, number> = { safe: 0, help: 0, clarification: 0, different: 0, none: 0 };
   for (const cat of Object.keys(LEX) as ResponseCategory[]) {
-    for (const kw of LEX[cat]) if (lower.includes(kw)) scores[cat] += kw.length > 3 ? 2 : 1;
+    for (const kw of LEX[cat]) if (matches(lower, kw)) scores[cat] += kw.length > 3 ? 2 : 1;
   }
   // A help signal outranks a question mark; a "different situation" narrative outranks a plain question.
   if (scores.help > 0) scores.help += 2;
   if (scores.different > 0 && scores.clarification > 0) scores.different += 1;
-  let best = (Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0] as ResponseCategory) ?? "none";
+  const [top, topScore] = Object.entries(scores).sort((a, b) => b[1] - a[1])[0] as [ResponseCategory, number];
+  // No lexical evidence at all: never default to "safe" — use the operator hint or hand it to a human.
+  let best: ResponseCategory = topScore > 0 ? top : (hint ?? "none");
   if (hint && scores[hint] > 0) best = hint;
   const competing = (Object.keys(scores) as ResponseCategory[]).filter((c) => c !== best && scores[c] > 0).length;
   const confidence = Math.max(0.55, Math.min(0.97, 0.7 + 0.06 * Math.min(4, scores[best]) - 0.07 * competing));
@@ -53,8 +61,15 @@ export function classifyResponse(text: string, lang: Lang, hint?: ResponseCatego
       constraints: ["Categories fixed: safe / help / clarification / different", "Urgency 1–5 from extracted entities, never from tone alone", "Operator sees original text alongside the label"],
       rationale: `Lexical evidence for "${best}" (${scores[best]} points); entities: ${entities.join(", ") || "none"}.`,
       confidence: Number(confidence.toFixed(2)),
-      reviewRequired: best === "different" || confidence < 0.75,
-      reviewReason: best === "different" ? "Situation differs from the modelled context — operator judgement required" : confidence < 0.75 ? "Low classifier confidence" : undefined,
+      reviewRequired: best === "different" || best === "none" || confidence < 0.75,
+      reviewReason:
+        best === "different"
+          ? "Situation differs from the modelled context — operator judgement required"
+          : best === "none"
+            ? "No recognisable intent — operator must read the original text"
+            : confidence < 0.75
+              ? "Low classifier confidence"
+              : undefined,
     }),
   };
 }
@@ -82,6 +97,6 @@ function summarise(cat: ResponseCategory, entities: string[], lang: Lang): strin
     case "different":
       return `Reports a situation different from the modelled context${ent}${l}`;
     case "none":
-      return "No response";
+      return `Could not classify — operator review${ent}${l}`;
   }
 }
