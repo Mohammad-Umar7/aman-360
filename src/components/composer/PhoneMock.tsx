@@ -33,11 +33,11 @@ export function SmsPhone({ variant, lang, replyChips }: { variant: ChannelVarian
       </div>
       <div className="flex-1 px-3 pt-4 space-y-2">
         <div className="text-center text-[10px] text-ink-4">Today 14:07</div>
-        <div dir={rtl ? "rtl" : "ltr"} className={cn("max-w-[92%] rounded-2xl rounded-bl-md bg-[#1f2b3f] px-3 py-2 text-[12.5px] leading-5 text-ink", rtl && "font-arabic ml-auto rounded-bl-2xl rounded-br-md")}>
+        <div dir={rtl ? "rtl" : "ltr"} lang={rtl ? "ar" : "en"} className={cn("max-w-[92%] rounded-2xl rounded-bl-md bg-[#1f2b3f] px-3 py-2 text-[12.5px] leading-5 text-ink", rtl && "font-arabic ml-auto rounded-bl-2xl rounded-br-md")}>
           {text}
         </div>
         {replyChips && (
-          <div className={cn("flex gap-1.5 pt-1", rtl && "justify-end")}>
+          <div dir={rtl ? "rtl" : "ltr"} lang={rtl ? "ar" : "en"} className="flex gap-1.5 pt-1">
             {(rtl ? ["بخير", "مساعدة"] : ["SAFE", "HELP"]).map((c) => (
               <span key={c} className={cn("rounded-full border border-brand/40 bg-brand/10 px-2.5 py-0.5 text-[11px] text-brand-2", rtl && "font-arabic")}>
                 {c}
@@ -47,7 +47,7 @@ export function SmsPhone({ variant, lang, replyChips }: { variant: ChannelVarian
         )}
       </div>
       <div className="px-3 pb-3">
-        <div className="h-8 rounded-full bg-white/[0.06] border border-white/10 flex items-center px-3 text-[11px] text-ink-4">{rtl ? "رسالة نصية" : "Text message"}</div>
+        <div dir={rtl ? "rtl" : "ltr"} lang={rtl ? "ar" : "en"} className={cn("h-8 rounded-full bg-white/[0.06] border border-white/10 flex items-center px-3 text-[11px] text-ink-4", rtl && "font-arabic")}>{rtl ? "رسالة نصية" : "Text message"}</div>
       </div>
     </Frame>
   );
@@ -65,7 +65,7 @@ export function PushPhone({ variant, lang }: { variant: ChannelVariant; lang: La
         <div className="text-[11px] text-ink-3 mt-1">Tuesday, 9 September</div>
       </div>
       <div className="px-3 pt-6">
-        <div dir={rtl ? "rtl" : "ltr"} className={cn("rounded-2xl bg-[#1a2437]/95 border border-white/10 p-3 shadow-[0_12px_30px_-12px_rgba(0,0,0,0.8)]", rtl && "font-arabic")}>
+        <div dir={rtl ? "rtl" : "ltr"} lang={rtl ? "ar" : "en"} className={cn("rounded-2xl bg-[#1a2437]/95 border border-white/10 p-3 shadow-[0_12px_30px_-12px_rgba(0,0,0,0.8)]", rtl && "font-arabic")}>
           <div className="flex items-center gap-2 mb-1.5">
             <BrandMark size={16} />
             <span className="text-[10.5px] font-semibold text-ink-2 uppercase tracking-wide">AMAN</span>

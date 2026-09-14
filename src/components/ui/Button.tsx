@@ -37,6 +37,7 @@ export function Button({
         S[size],
         className,
       )}
+      type="button"
       {...rest}
     >
       {icon}

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Flame, GitCompareArrows, Languages, ListChecks, MapPinned, MessageSquareText, Radio, ShieldCheck, Siren, Sparkles, Sun, Users, Wind } from "lucide-react";
 import { BrandMark } from "@/components/shell/BrandMark";
@@ -173,8 +174,7 @@ export function Twin() {
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
           {shots.map((s) => (
             <figure key={s.src} className="panel overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={s.src} alt={s.cap} className="w-full aspect-video object-cover" loading="lazy" />
+              <Image src={s.src} alt={s.cap} width={1280} height={720} sizes="(min-width: 768px) 33vw, 100vw" className="w-full aspect-video object-cover" />
               <figcaption className="px-4 py-3 text-[13px] text-ink-2">{s.cap}</figcaption>
             </figure>
           ))}

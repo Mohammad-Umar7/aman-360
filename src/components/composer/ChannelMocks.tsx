@@ -21,7 +21,7 @@ export function VoiceScript({ variant, lang }: { variant: ChannelVariant; lang: 
             <span key={i} className="w-[3px] rounded-full bg-brand/60" style={{ height: `${25 + 55 * Math.abs(Math.sin(i * 0.9)) * Math.abs(Math.cos(i * 0.37))}%` }} />
           ))}
         </div>
-        <p dir={rtl ? "rtl" : "ltr"} className={cn("text-[13px] leading-6 text-ink", rtl && "font-arabic text-[13.5px]")}>
+        <p dir={rtl ? "rtl" : "ltr"} lang={rtl ? "ar" : "en"} className={cn("text-[13px] leading-6 text-ink", rtl && "font-arabic text-[13.5px]")}>
           {text}
         </p>
         <div className="mt-3 flex gap-1.5">
@@ -46,7 +46,7 @@ export function OperatorScript({ variant, lang }: { variant: ChannelVariant; lan
         <span className="text-[12.5px] font-medium">Call-centre script · 800-AMAN</span>
         <span className="ml-auto text-[11px] text-ink-4">agent desktop</span>
       </div>
-      <ol dir={rtl ? "rtl" : "ltr"} className={cn("px-4 py-3 space-y-2", rtl && "font-arabic")}>
+      <ol dir={rtl ? "rtl" : "ltr"} lang={rtl ? "ar" : "en"} className={cn("px-4 py-3 space-y-2", rtl && "font-arabic")}>
         {lines.map((l, i) => (
           <li key={i} className="flex gap-2.5 text-[13px] leading-5 text-ink">
             <span className="num shrink-0 h-5 w-5 rounded-md bg-white/[0.06] text-ink-3 text-[11px] flex items-center justify-center">{i + 1}</span>
@@ -74,7 +74,7 @@ export function WebNotice({ variant, lang, stale }: { variant: ChannelVariant; l
             <div className="text-[11px] text-[#6b7280] mt-0.5">Last updated 26 Aug 2026 · flagged for correction by AMAN</div>
           </div>
         ) : (
-          <div dir={rtl ? "rtl" : "ltr"} className={cn("rounded-lg border-l-4 border-[#c8322b] bg-white px-3 py-2.5 shadow-sm", rtl && "font-arabic border-l-0 border-r-4")}>
+          <div dir={rtl ? "rtl" : "ltr"} lang={rtl ? "ar" : "en"} className={cn("rounded-lg border-l-4 border-[#c8322b] bg-white px-3 py-2.5 shadow-sm", rtl && "font-arabic border-l-0 border-r-4")}>
             <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wide text-[#c8322b]">
               <ShieldCheck size={11} /> {rtl ? "إشعار موثّق" : "Verified notice"}
             </div>
@@ -99,8 +99,8 @@ export function SignageMock({ variant, lang }: { variant: ChannelVariant; lang: 
       </div>
       <div className="p-4">
         <div className="rounded-lg border-[6px] border-[#2a2f36] bg-[#07090d] px-4 py-4 shadow-[inset_0_0_40px_rgba(0,0,0,0.9)]" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px)", backgroundSize: "6px 6px" }}>
-          {lines.map((l) => (
-            <div key={l} dir={rtl ? "rtl" : "ltr"} className={cn("text-center text-[19px] font-bold tracking-[0.12em] text-[#ffb347] leading-8", rtl ? "font-arabic tracking-normal" : "mono")} style={{ textShadow: "0 0 12px rgba(255,179,71,0.75)" }}>
+          {lines.map((l, i) => (
+            <div key={i} dir={rtl ? "rtl" : "ltr"} lang={rtl ? "ar" : "en"} className={cn("text-center text-[19px] font-bold tracking-[0.12em] text-[#ffb347] leading-8", rtl ? "font-arabic tracking-normal" : "mono")} style={{ textShadow: "0 0 12px rgba(255,179,71,0.75)" }}>
               {l}
             </div>
           ))}

@@ -48,8 +48,9 @@ export function Topbar() {
           <Activity size={13} className={state.facts.length ? "text-teal" : "text-ink-4"} />
           <span>Assurance {state.facts.length ? `${Math.round(assurance * 100)}%` : "—"}</span>
         </div>
-        <div className="hidden md:flex items-center gap-1.5 text-ink-3">
+        <div className="hidden md:flex items-center gap-1.5 text-ink-3" title="Preview language for citizen-facing messages (the console itself stays in English)">
           <Languages size={14} />
+          <span className="text-[11px] uppercase tracking-wider text-ink-4">Messages</span>
           <Segmented
             size="xs"
             value={lang}
