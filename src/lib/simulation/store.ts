@@ -70,7 +70,7 @@ export const useSim = create<SimStore>((set, get) => ({
     set({ step: step + 1, t: 0, started: true });
   },
   prev: () => set((s) => ({ step: Math.max(0, s.step - 1), t: 0 })),
-  reset: () => set({ step: 0, t: 0, playing: false, started: false, selectedPersonId: null }),
+  reset: () => set({ step: 0, t: 0, playing: false, started: false, selectedPersonId: null, camera: "auto" }),
   play: () => set((s) => (atEnd(s) ? { step: 0, t: 0, playing: true, started: true } : { playing: true, started: true })),
   pause: () => set({ playing: false }),
   toggle: () => set((s) => (s.playing ? { playing: false } : atEnd(s) ? { step: 0, t: 0, playing: true, started: true } : { playing: true, started: true })),
@@ -81,7 +81,8 @@ export const useSim = create<SimStore>((set, get) => ({
     const nt = t + dt / duration;
     if (nt >= 1) {
       if (step >= LAST_STEP) set({ t: 1, playing: false });
-      else set({ step: step + 1, t: 0 });
+      // Carry the overshoot into the next step so no wall-clock time is lost at the boundary.
+      else set({ step: step + 1, t: Math.min(0.999, ((nt - 1) * duration) / STEPS[step + 1].durationSec) });
     } else set({ t: nt });
   },
   setLang: (lang) => set({ lang }),

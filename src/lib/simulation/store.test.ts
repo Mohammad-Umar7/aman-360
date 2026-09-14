@@ -32,7 +32,8 @@ describe("useSim", () => {
     expect(useSim.getState().t).toBeCloseTo(0.5);
     s.tick(STEPS[0].durationSec);
     expect(useSim.getState().step).toBe(1);
-    expect(useSim.getState().t).toBe(0);
+    // half of step 0 was left over and is carried into step 1
+    expect(useSim.getState().t).toBeCloseTo((STEPS[0].durationSec / 2) / STEPS[1].durationSec);
     useSim.getState().setStep(LAST_STEP);
     useSim.getState().play();
     useSim.getState().tick(STEPS[LAST_STEP].durationSec + 1);
@@ -62,8 +63,9 @@ describe("useSim", () => {
   it("clears selection and playback on reset", () => {
     useSim.getState().selectPerson("sara");
     useSim.getState().setStep(4);
+    useSim.getState().setCamera("underpass");
     useSim.getState().play();
     useSim.getState().reset();
-    expect(useSim.getState()).toMatchObject({ step: 0, t: 0, playing: false, selectedPersonId: null, started: false });
+    expect(useSim.getState()).toMatchObject({ step: 0, t: 0, playing: false, selectedPersonId: null, started: false, camera: "auto" });
   });
 });
