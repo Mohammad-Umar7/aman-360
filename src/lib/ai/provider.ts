@@ -35,15 +35,16 @@ export function trace(opts: {
     model: `${MODEL.id} · ${MODEL.version}`,
     task: opts.task,
     inputs: opts.inputs,
-    constraints: opts.constraints ?? DEFAULT_CONSTRAINTS,
+    // Copy so a consumer that sorts or appends never edits every other trace.
+    constraints: [...(opts.constraints ?? DEFAULT_CONSTRAINTS)],
     rationale: opts.rationale,
-    confidence: opts.confidence,
+    confidence: Number.isFinite(opts.confidence) ? Math.min(1, Math.max(0, opts.confidence)) : 0,
     reviewRequired: opts.reviewRequired ?? false,
     reviewReason: opts.reviewReason,
   };
 }
 
-export const DEFAULT_CONSTRAINTS = [
+export const DEFAULT_CONSTRAINTS: readonly string[] = [
   "Instruction locked to the approved action — the model adapts wording only",
   "Approved-phrase list SOP-FF-03 v4.1 enforced; no speculation on cause or duration",
   "Only verified facts may be referenced (source + timestamp attached)",
