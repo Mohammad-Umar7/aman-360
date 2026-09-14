@@ -16,9 +16,8 @@ export function clockShort(offsetSec: number): string {
 }
 
 export function tplus(offsetSec: number): string {
-  const m = Math.floor(offsetSec / 60);
-  const s = Math.round(offsetSec % 60);
-  return `T+${pad(m)}:${pad(s)}`;
+  const total = Math.max(0, Math.round(offsetSec));
+  return `T+${pad(Math.floor(total / 60))}:${pad(total % 60)}`;
 }
 
 export const pad = (n: number) => n.toString().padStart(2, "0");
@@ -27,6 +26,10 @@ export const fmtInt = (n: number) => new Intl.NumberFormat("en-US").format(Math.
 
 export const pct = (n: number, digits = 0) => `${(n * 100).toFixed(digits)}%`;
 
-export const fmtSec = (s: number) => (s < 60 ? `${s.toFixed(1)} s` : `${Math.floor(s / 60)}m ${Math.round(s % 60)}s`);
+export const fmtSec = (s: number) => {
+  if (s < 60) return `${s.toFixed(1)} s`;
+  const total = Math.round(s);
+  return `${Math.floor(total / 60)}m ${total % 60}s`;
+};
 
 export const arabicDigits = (s: string) => s.replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[Number(d)]);
