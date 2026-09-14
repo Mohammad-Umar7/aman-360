@@ -90,6 +90,7 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
           <div className="flex items-center gap-2 mb-2">
             <LayerTag layer="deterministic" long />
             <span className="text-[12.5px] text-ink-2">{impact.reason}</span>
+            <span className="ml-auto mono text-[11px] text-teal-2 shrink-0" title="Rule whose outcome set the approved action">decided by {impact.decidedBy}</span>
           </div>
           <RuleTraceList rules={impact.rules} />
 
@@ -172,7 +173,8 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
                 <span className="mono">{clockAt(reply.sec)}</span>
                 <Badge tone="violet" className="ml-auto">AI draft · approved</Badge>
               </div>
-              {lang === "ar" ? <Arabic>{reply.textAr}</Arabic> : <p>{reply.text}</p>}
+              {/* An outgoing reply is shown in the recipient's language, whatever the operator's UI language. */}
+              {person.language === "ar" ? <Arabic>{reply.textAr}</Arabic> : <p>{reply.text}</p>}
             </div>
           )}
         </>
