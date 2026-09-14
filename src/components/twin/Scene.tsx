@@ -33,12 +33,14 @@ function FrameHook() {
     const orig = console.error;
     console.error = (...args: unknown[]) => {
       w.__amanErrors?.push(args.map((a) => (typeof a === "string" ? a : String(a))).join(" ").slice(0, 1200));
+      if (w.__amanErrors && w.__amanErrors.length > 50) w.__amanErrors.splice(0, w.__amanErrors.length - 50);
       orig(...args);
     };
     return () => {
       console.error = orig;
       delete w.__amanAdvance;
       delete w.__amanScene;
+      delete w.__amanGL;
     };
   }, [advance, scene, gl]);
   return null;
@@ -91,12 +93,13 @@ export function Scene({ interactive, compact, cameraMode, labels }: { interactiv
         <planeGeometry args={[2800, 1240]} />
         <meshStandardMaterial color="#cbbfa6" roughness={1} />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} position={[-800, -0.1, -51]} receiveShadow>
-        <planeGeometry args={[1200, 278]} />
+      {/* side ground ends at z = 80, where the sloping shore strips take over (they were z-fighting at the old overlap) */}
+      <mesh rotation-x={-Math.PI / 2} position={[-800, -0.1, -55]} receiveShadow>
+        <planeGeometry args={[1200, 270]} />
         <meshStandardMaterial color="#cbbfa6" roughness={1} />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} position={[800, -0.1, -51]} receiveShadow>
-        <planeGeometry args={[1200, 278]} />
+      <mesh rotation-x={-Math.PI / 2} position={[800, -0.1, -55]} receiveShadow>
+        <planeGeometry args={[1200, 270]} />
         <meshStandardMaterial color="#cbbfa6" roughness={1} />
       </mesh>
       {/* sea bed beyond the modelled beach so nothing shows through the water at the district's edges */}

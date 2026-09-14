@@ -74,8 +74,11 @@ export default function DigitalTwin({ className, hud = "full", interactive = tru
       <Canvas
         shadows
         dpr={[1, 1.75]}
-        gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05, outputColorSpace: THREE.SRGBColorSpace, powerPreference: "high-performance" }}
-        camera={{ fov: 42, near: 0.5, far: 9000, position: [-150, 92, 200] }}
+        // SMAA in the composer is the anti-aliasing path, so the default framebuffer needs no MSAA; the
+        // composer's ToneMapping effect replaces the renderer's, so no exposure is set here.
+        gl={{ antialias: false, toneMapping: THREE.ACESFilmicToneMapping, outputColorSpace: THREE.SRGBColorSpace, powerPreference: "high-performance" }}
+        // Far plane just beyond the sky dome (radius 2300) from the furthest orbit distance, so labels keep a usable depth range.
+        camera={{ fov: 42, near: 0.5, far: 3200, position: [-150, 92, 200] }}
         style={{ position: "absolute", inset: 0 }}
       >
         <Suspense fallback={null}>

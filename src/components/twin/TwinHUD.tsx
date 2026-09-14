@@ -89,8 +89,9 @@ function caption(step: number, t: number): { title: string; sub: string } {
 
 function Caption() {
   const step = useSim((s) => s.step);
-  const t = useSim((s) => s.t);
-  const c = caption(step, Math.round(t * 4) / 4);
+  // Quantise inside the selector so the caption re-renders four times per step, not 25 times a second.
+  const tq = useSim((s) => Math.round(s.t * 4) / 4);
+  const c = caption(step, tq);
   return (
     <AnimatePresence mode="wait">
       <motion.div key={c.title} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.35 }} className="max-w-[560px]">

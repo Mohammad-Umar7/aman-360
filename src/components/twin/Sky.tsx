@@ -110,7 +110,7 @@ export function SkyAndLights() {
         castShadow
         shadow-mapSize={[4096, 4096]}
         shadow-bias={-0.0003}
-        shadow-normalBias={0.5}
+        shadow-normalBias={0.05}
         shadow-camera-left={-230}
         shadow-camera-right={230}
         shadow-camera-top={230}
