@@ -6,7 +6,9 @@ import { buildScenario } from "@/lib/simulation/scenario";
 import { LAST_STEP, STEPS } from "@/lib/simulation/steps";
 import type { Lang, ScenarioState } from "@/lib/types";
 
-export type CameraPreset = "auto" | "overview" | "underpass" | "closure" | "impact" | "residence" | "hospital" | "corniche" | "follow";
+export const CAMERA_PRESET_IDS = ["auto", "overview", "underpass", "closure", "impact", "residence", "hospital", "corniche", "follow"] as const;
+export type CameraPreset = (typeof CAMERA_PRESET_IDS)[number];
+export const isCameraPreset = (v: string): v is CameraPreset => (CAMERA_PRESET_IDS as readonly string[]).includes(v);
 
 export type TwinLayer = "hazard" | "routes" | "people" | "units" | "sensors" | "life";
 export const TWIN_LAYERS: { id: TwinLayer; label: string }[] = [
