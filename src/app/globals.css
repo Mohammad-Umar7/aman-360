@@ -16,7 +16,7 @@
   --color-ink: #e8eef7;
   --color-ink-2: #a9b5c7;
   --color-ink-3: #6f7e94;
-  --color-ink-4: #4b5870;
+  --color-ink-4: #6b788d;
 
   /* Accents */
   --color-brand: #4f8df7;
@@ -30,9 +30,10 @@
   --color-alert: #f0554f;
   --color-info: #5aa9ff;
 
+  /* next/font publishes --font-inter / --font-noto-arabic / --font-jetbrains on <html>; the theme tokens must not reference themselves. */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-arabic: var(--font-arabic), "Noto Sans Arabic", "Segoe UI", Tahoma, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-arabic: var(--font-noto-arabic), "Noto Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
 
   --radius-panel: 16px;
   --radius-tile: 10px;
@@ -84,11 +85,13 @@ body {
   background: rgba(79, 141, 247, 0.35);
 }
 
-/* Arabic text */
-[dir="rtl"],
-.font-arabic {
-  font-family: var(--font-arabic);
-  line-height: 1.75;
+/* Arabic text — in the base layer so leading-* utilities can still override the line height. */
+@layer base {
+  [dir="rtl"],
+  .font-arabic {
+    font-family: var(--font-arabic);
+    line-height: 1.75;
+  }
 }
 
 /* Scrollbars */
@@ -108,6 +111,8 @@ body {
   background: transparent;
 }
 
+/* Component classes live in Tailwind's components layer so utilities (border-*, leading-*, hover:bg-*) win over them. */
+@layer components {
 /* Panels */
 .panel {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0) 40%), var(--color-bg-1);
@@ -151,12 +156,12 @@ body {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
+}
 
-/* Focus */
+/* Focus — never rewrite the element's own radius. */
 :focus-visible {
   outline: 2px solid rgba(79, 141, 247, 0.7);
   outline-offset: 2px;
-  border-radius: 6px;
 }
 
 /* Reduced motion */

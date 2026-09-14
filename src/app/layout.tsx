@@ -9,13 +9,13 @@ const inter = Inter({
 });
 
 const mono = JetBrains_Mono({
-  variable: "--font-mono",
+  variable: "--font-jetbrains",
   subsets: ["latin"],
   display: "swap",
 });
 
 const arabic = Noto_Sans_Arabic({
-  variable: "--font-arabic",
+  variable: "--font-noto-arabic",
   subsets: ["arabic"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
