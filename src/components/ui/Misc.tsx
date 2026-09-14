@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export function Segmented<T extends string>({ value, onChange, options, size = "sm", className }: { value: T; onChange: (v: T) => void; options: { value: T; label: ReactNode }[]; size?: "xs" | "sm"; className?: string }) {
@@ -11,6 +11,8 @@ export function Segmented<T extends string>({ value, onChange, options, size = "
       {options.map((o) => (
         <button
           key={o.value}
+          type="button"
+          aria-pressed={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
             "rounded-md font-medium transition-colors whitespace-nowrap",
@@ -26,12 +28,29 @@ export function Segmented<T extends string>({ value, onChange, options, size = "
 }
 
 export function Drawer({ open, onClose, title, children, width = 520 }: { open: boolean; onClose: () => void; title?: ReactNode; children: ReactNode; width?: number }) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  // Escape closes the drawer; the listener runs in the capture phase so the global step shortcuts never see the key.
+  useEffect(() => {
+    if (!open) return;
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [open, onClose]);
   return (
     <AnimatePresence>
       {open && (
         <>
           <motion.div className="fixed inset-0 z-40 bg-black/40" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
           <motion.aside
+            role="dialog"
+            aria-modal="true"
+            aria-label={typeof title === "string" && title ? title : "Detail"}
             className="fixed top-0 right-0 bottom-0 z-50 glass border-l border-line flex flex-col shadow-float"
             style={{ width: `min(${width}px, 100vw)` }}
             initial={{ x: 40, opacity: 0 }}
@@ -41,7 +60,7 @@ export function Drawer({ open, onClose, title, children, width = 520 }: { open: 
           >
             <div className="flex items-center justify-between px-5 h-14 border-b border-line shrink-0">
               <div className="min-w-0 font-semibold text-[14px] truncate">{title}</div>
-              <button onClick={onClose} className="h-8 w-8 rounded-md text-ink-3 hover:text-ink hover:bg-white/[0.06] flex items-center justify-center" aria-label="Close">
+              <button ref={closeRef} type="button" onClick={onClose} className="h-8 w-8 rounded-md text-ink-3 hover:text-ink hover:bg-white/[0.06] flex items-center justify-center" aria-label="Close">
                 <X size={16} />
               </button>
             </div>

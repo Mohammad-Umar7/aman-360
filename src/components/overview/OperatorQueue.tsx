@@ -44,8 +44,8 @@ export function OperatorQueue({ items, className }: { items: OperatorItem[]; cla
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0">
                   <Badge tone={P[it.priority]}>{it.priority}</Badge>
-                  {it.action && (
-                    <Button size="xs" variant="ghost" onClick={() => it.personId && selectPerson(it.personId)} className="text-brand-2">
+                  {it.action && it.personId && (
+                    <Button size="xs" variant="ghost" onClick={() => selectPerson(it.personId!)} className="text-brand-2">
                       {it.action}
                     </Button>
                   )}
