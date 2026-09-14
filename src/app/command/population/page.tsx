@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Accessibility, Car, Building2, Footprints, Home, PhoneOff, Ear, Search } from "lucide-react";
 import { PersonDrawer } from "@/components/population/PersonDrawer";
 import { Avatar } from "@/components/ui/Avatar";
-import { Badge, PERSON_STATUS, SeverityDot, StatusPill } from "@/components/ui/Badge";
+import { Badge, SeverityDot, StatusPill } from "@/components/ui/Badge";
 import { KpiTile } from "@/components/ui/Kpi";
 import { Arabic, Segmented } from "@/components/ui/Misc";
 import { Panel } from "@/components/ui/Panel";
@@ -13,11 +13,13 @@ import { channelLabel } from "@/lib/engine/impact";
 import { fmtInt } from "@/lib/format";
 import { AFFECTED_BREAKDOWN } from "@/lib/simulation/script";
 import { useScenario, useSim } from "@/lib/simulation/store";
-import type { PersonState } from "@/lib/types";
+import type { PersonState, PersonStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const CTX = { driving: Car, home: Home, walking: Footprints, office: Building2 } as const;
 type Filter = "all" | "affected" | "attention" | "safe" | "no_alert";
+/** Statuses that need an operator's eyes — used by both the KPI tile and the "Attention" filter. */
+const ATTENTION: PersonStatus[] = ["help", "no_response", "clarification", "different", "assistance_assigned"];
 
 export default function PopulationPage() {
   const state = useScenario();
@@ -29,7 +31,7 @@ export default function PopulationPage() {
   const rows = useMemo(() => {
     let list = state.people;
     if (filter === "affected") list = list.filter((p) => p.impact?.affected);
-    if (filter === "attention") list = list.filter((p) => ["help", "no_response", "clarification", "different", "assistance_assigned"].includes(p.status));
+    if (filter === "attention") list = list.filter((p) => ATTENTION.includes(p.status));
     if (filter === "safe") list = list.filter((p) => ["safe", "resolved"].includes(p.status));
     if (filter === "no_alert") list = list.filter((p) => p.status === "no_alert");
     if (q) list = list.filter((p) => p.person.name.toLowerCase().includes(q.toLowerCase()) || p.person.nameAr.includes(q));
@@ -38,13 +40,13 @@ export default function PopulationPage() {
 
   const affected = state.people.filter((p) => p.impact?.affected).length;
   const accessibility = state.people.filter((p) => p.impact?.affected && (p.person.accessibility.mobility !== "standard" || p.person.accessibility.hearing || !p.person.accessibility.smartphone)).length;
-  const attention = state.people.filter((p) => ["help", "no_response", "clarification", "different"].includes(p.status)).length;
+  const attention = state.people.filter((p) => ATTENTION.includes(p.status)).length;
 
   return (
     <div className="p-6 flex flex-col gap-5 min-w-[1100px]">
       <div className="grid grid-cols-6 gap-3">
         <KpiTile label="Affected population" value={state.kpis.affected} tone={state.kpis.affected ? "warn" : "neutral"} sub="aggregate estimate (institutional)" compact />
-        <KpiTile label="Profiles evaluated" value={step >= 3 ? state.people.length : 0} tone="teal" sub="synthetic demo profiles" compact />
+        <KpiTile label={step >= 3 ? "Profiles evaluated" : "Profiles registered"} value={state.people.length} tone="teal" sub="synthetic demo profiles" compact />
         <KpiTile label="Affected profiles" value={affected} tone={affected ? "warn" : "neutral"} sub="rules R-01 / R-02 fired" compact />
         <KpiTile label="Accessibility-adapted" value={accessibility} tone={accessibility ? "info" : "neutral"} sub="mobility, hearing, no smartphone" compact />
         <KpiTile label="Need attention" value={attention} tone={attention ? "alert" : "neutral"} sub="help, questions, silence" compact />
@@ -61,7 +63,7 @@ export default function PopulationPage() {
             <>
               <div className="flex items-center gap-1.5 h-7 px-2 rounded-md bg-white/[0.05] border border-line text-ink-3">
                 <Search size={12} />
-                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search" className="bg-transparent outline-none text-[12.5px] text-ink w-28 placeholder:text-ink-4" />
+                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search" aria-label="Search people" className="bg-transparent outline-none text-[12.5px] text-ink w-28 placeholder:text-ink-4" />
               </div>
               <Segmented
                 size="xs"
@@ -143,7 +145,19 @@ function Row({ ps, onClick, step }: { ps: PersonState; onClick: () => void; step
   const last = [...ps.deliveries].reverse()[0]?.at ?? ps.message?.createdAt;
   const lastLabel = ps.response ? `${ps.response.at} reply` : ps.escalation.length ? `${ps.escalation[ps.escalation.length - 1].at} ${ps.escalation[ps.escalation.length - 1].rule}` : last ? `${last}` : "—";
   return (
-    <tr onClick={onClick} className={cn("cursor-pointer hover:bg-white/[0.03] transition-colors", person.spotlight && "bg-white/[0.012]")}>
+    <tr
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`Open ${person.name}`}
+      className={cn("cursor-pointer hover:bg-white/[0.03] focus-visible:bg-white/[0.04] transition-colors", person.spotlight && "bg-white/[0.012]")}
+    >
       <td className="px-4 py-2.5">
         <div className="flex items-center gap-2.5">
           <Avatar person={person} size={28} />
@@ -194,4 +208,3 @@ function Row({ ps, onClick, step }: { ps: PersonState; onClick: () => void; step
   );
 }
 
-export const STATUS_LABELS = PERSON_STATUS;
