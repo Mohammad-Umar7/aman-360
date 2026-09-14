@@ -31,7 +31,8 @@ interface Props {
   focusPersonId?: string | null;
   onSelectPerson?: (id: string) => void;
   compact?: boolean;
-  zoom?: { cx: number; cy: number; size: number };
+  /** Fixed window, or follow a person's marker (so a moving road user stays in frame). */
+  zoom?: { cx: number; cy: number; size: number } | { follow: string; size: number };
 }
 
 export interface MarkerPosition {
@@ -72,11 +73,11 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
   const hazardOn = hazardVisible(step, t);
   const closureOn = closureVisible(step, t);
   const E = MAP_EXTENT;
-  const vb = zoom ? `${zoom.cx - zoom.size / 2} ${-zoom.cy - zoom.size / 2} ${zoom.size} ${zoom.size}` : `${-E} ${-E} ${2 * E} ${2 * E}`;
-
   const amb = ambulanceVehicle(step, t);
   const ambPos = pointAlong(amb.path, amb.progress);
   const positions = resolvePositions(state, step, t);
+  const window = zoom && "follow" in zoom ? { cx: positions.get(zoom.follow)?.x ?? 0, cy: positions.get(zoom.follow)?.y ?? 0, size: zoom.size } : zoom;
+  const vb = window ? `${window.cx - window.size / 2} ${-window.cy - window.size / 2} ${window.size} ${window.size}` : `${-E} ${-E} ${2 * E} ${2 * E}`;
 
   const ahmedState = state.people.find((p) => p.person.id === "ahmed");
   const showReroute = step >= 3 && !!ahmedState?.impact?.route?.alternative;

@@ -76,7 +76,7 @@ function PersonDetail({ ps, lang }: { ps: NonNullable<ReturnType<typeof useScena
         </div>
       </div>
 
-      <DistrictMap state={state} compact focusPersonId={person.id} className="h-[180px]" zoom={{ cx: person.location.x, cy: person.location.y, size: 150 }} />
+      <DistrictMap state={state} compact focusPersonId={person.id} className="h-[180px]" zoom={{ follow: person.id, size: 150 }} />
 
       <div>
         <Kv k="Location" v={<span className="flex items-center gap-1"><MapPin size={12} className="text-ink-3" /> {building ? building.name : `(${person.location.x}, ${person.location.y}) — ${person.context}`}</span>} />
