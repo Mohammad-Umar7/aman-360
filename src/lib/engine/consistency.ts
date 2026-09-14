@@ -23,7 +23,7 @@ export function checkChannels(variants: ChannelVariant[], facts: VerifiedFact[],
     const checks = [
       { name: "Names the verified road", pass: /al majaz/i.test(en) && /المجاز/.test(ar) },
       { name: "States the verified status (closed)", pass: !closed || (/closed/i.test(en) && /مغلق|مغلقة/.test(ar)) },
-      { name: "Does not contradict the verified status", pass: !closed || !/\bopen\b/i.test(en.replace(/open (safe|the) route/i, "")) },
+      { name: "Does not contradict the verified status", pass: !closed || (!/\bopen\b/i.test(en.replace(/open (safe|the) route/i, "")) && !/مفتوح/.test(ar)) },
       { name: "Arabic and English carry the same facts", pass: parity(en, ar) },
       { name: "Within channel limits", pass: withinLimits(v) },
     ];
@@ -43,12 +43,12 @@ export function checkChannels(variants: ChannelVariant[], facts: VerifiedFact[],
 }
 
 function parity(en: string, ar: string): boolean {
-  const nums = (s: string) => (s.match(/\d+/g) ?? []).map((n) => Number(n)).filter((n) => n < 1000).sort().join(",");
+  const nums = (s: string) => (s.match(/\d+/g) ?? []).map((n) => Number(n)).filter((n) => n < 1000).sort((a, b) => a - b).join(",");
   return nums(en) === nums(ar);
 }
 
 function withinLimits(v: ChannelVariant): boolean {
-  if (v.channel === "signage") return v.en.split("\n").every((l) => l.length <= 20) && v.en.split("\n").length <= 3;
+  if (v.channel === "signage") return [v.en, v.ar].every((text) => text.split("\n").length <= 3 && text.split("\n").every((l) => l.length <= 20));
   if (v.channel === "app") return (v.title?.length ?? 0) <= 60;
   return true;
 }

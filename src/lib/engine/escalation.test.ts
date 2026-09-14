@@ -42,3 +42,18 @@ describe("triageScore", () => {
     expect(silent.score).toBe(60);
   });
 });
+
+describe("planEscalation — accessibility-aware channels", () => {
+  const aisha = personById("aisha");
+  it("never places a voice call to a hearing-impaired resident", () => {
+    const plan = planEscalation({ person: aisha, sentAtSec: 355, nowSec: 2000, channels: ["sms"] });
+    expect(plan.map((p) => p.rule)).toEqual(["E-02", "E-03"]);
+    for (const p of plan) expect(p.channel).not.toBe("voice");
+    expect(plan[0].action).toMatch(/text follow-up/);
+  });
+  it("skips the resend when no untried channel exists and never emits an undefined channel", () => {
+    const plan = planEscalation({ person: personById("yusuf"), sentAtSec: 0, nowSec: 5000, channels: [] });
+    expect(plan.find((p) => p.rule === "E-01")).toBeUndefined();
+    for (const p of plan) if (p.rule !== "E-03") expect(p.channel).toBeDefined();
+  });
+});

@@ -49,3 +49,14 @@ describe("scenario channel checks", () => {
     expect(consistencyScore(st.channelChecks)).toBeLessThan(1);
   });
 });
+
+describe("checkChannels — bilingual rigour", () => {
+  it("fails an Arabic variant that contradicts the verified closure", () => {
+    const v: ChannelVariant = { channel: "sms", en: "Al Majaz underpass CLOSED.", ar: "نفق المجاز مفتوح." };
+    expect(checkChannels([v], [closedFact], "x")[0].consistent).toBe(false);
+  });
+  it("measures signage limits in both languages", () => {
+    const v: ChannelVariant = { channel: "signage", en: "AL MAJAZ RD CLOSED\nFLOODING AHEAD\nUSE KING FAISAL ST", ar: "طريق المجاز مغلق\nتجمّع مياه أمامك\nاستخدم شارع الملك فيصل" };
+    expect(checkChannels([v], [closedFact], "x")[0].checks.find((k) => k.name.startsWith("Within"))?.pass).toBe(false);
+  });
+});

@@ -2,9 +2,9 @@
  * Deterministic safety layer — escalation rules for unresponsive or vulnerable recipients.
  *
  *  E-01 no read within 5 min                 -> resend via next available channel
- *  E-02 no response within 10 min (in zone)  -> automated voice call
+ *  E-02 no response within 10 min            -> automated voice call (text follow-up if hearing-impaired)
  *  E-03 still no response, vulnerable registry -> welfare check via building management / field unit
- *  E-04 help request                          -> triage priority and unit assignment
+ *  E-04 help request                          -> triage priority and unit assignment (triageScore below)
  */
 
 import type { Channel, EscalationStep, Person } from "@/lib/types";
@@ -31,12 +31,19 @@ export function planEscalation(input: EscalationInput): PlannedEscalation[] {
   const unread = readAtSec === undefined;
   const unresponsive = respondedAtSec === undefined;
 
+  const canCall = !person.accessibility.hearing;
   if (unread && nowSec - sentAtSec >= 300) {
-    const next = channels.find((c) => c !== "app" && c !== "sms") ?? channels[channels.length - 1];
-    plan.push({ rule: "E-01", dueSec: sentAtSec + 300, action: "No read after 5 min — resend via next channel", channel: next });
+    // Resend on a channel that has not been tried yet; a voice call is never placed to a hearing-impaired resident.
+    const next = channels.find((c) => c !== "app" && c !== "sms" && (c !== "voice" || canCall));
+    if (next) plan.push({ rule: "E-01", dueSec: sentAtSec + 300, action: "No read after 5 min — resend via next channel", channel: next });
   }
   if (unresponsive && nowSec - sentAtSec >= 600) {
-    plan.push({ rule: "E-02", dueSec: sentAtSec + 600, action: "No response after 10 min — automated voice call", channel: "voice" });
+    const text = channels.find((c) => c === "sms") ?? channels[0];
+    plan.push(
+      canCall
+        ? { rule: "E-02", dueSec: sentAtSec + 600, action: "No response after 10 min — automated voice call", channel: "voice" }
+        : { rule: "E-02", dueSec: sentAtSec + 600, action: "No response after 10 min — text follow-up (voice suppressed: hearing impairment)", channel: text },
+    );
   }
   if (unresponsive && person.vulnerableRegistry && nowSec - sentAtSec >= 900) {
     plan.push({ rule: "E-03", dueSec: sentAtSec + 900, action: "Vulnerable-registry resident unresponsive — welfare check via building management / field unit" });
