@@ -18,10 +18,14 @@ export function SimulationProvider({ children }: { children: React.ReactNode }) 
   }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // Leave browser shortcuts (Ctrl+R, Cmd+←, …) and text entry alone.
+      if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
       const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable)) return;
       const s = useSim.getState();
       if (e.code === "Space" || e.key === " " || e.key === "Spacebar") {
+        // Space on a focused control activates that control; do not also toggle playback.
+        if (target?.closest("button, a, [role='button'], [role='tab'], [role='checkbox'], [role='switch']")) return;
         e.preventDefault();
         s.toggle();
       } else if (e.key === "ArrowRight") s.next();
