@@ -5,6 +5,7 @@ import { Ambulance, Inbox, ListChecks, Sparkles, Siren } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge, CATEGORY, LayerTag, TRIAGE_TONE } from "@/components/ui/Badge";
 import { Meter } from "@/components/ui/Kpi";
+import { PersonDrawer } from "@/components/population/PersonDrawer";
 import { Arabic, EmptyState } from "@/components/ui/Misc";
 import { Panel } from "@/components/ui/Panel";
 import { channelLabel } from "@/lib/engine/impact";
@@ -23,6 +24,7 @@ export default function TriagePage() {
   const step = state.step.index;
   const k = state.kpis;
   const byPerson = (id: string) => state.people.find((p) => p.person.id === id)!;
+  const drawer = <PersonDrawer />;
   const silent = state.people.filter((p) => p.status === "no_response");
 
   if (step < 6) {
@@ -31,6 +33,7 @@ export default function TriagePage() {
         <Panel title="Response triage" eyebrow="Citizen response loop" className="min-h-[520px]">
           <EmptyState icon={<Inbox size={26} />} title={step < 5 ? "No messages delivered yet" : "Waiting for citizen responses"} hint="Replies, help requests and silence are classified by the AI layer and prioritised by deterministic rules from step 6." />
         </Panel>
+        {drawer}
       </div>
     );
   }
@@ -190,6 +193,7 @@ export default function TriagePage() {
           </Panel>
         </div>
       </div>
+      {drawer}
     </div>
   );
 }
