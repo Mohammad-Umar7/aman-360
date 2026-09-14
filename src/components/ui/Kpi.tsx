@@ -8,19 +8,24 @@ import { DOT, type Tone } from "@/components/ui/Badge";
 /** Animates numeric changes so KPI tiles "count" when the scenario advances. */
 export function useCountUp(value: number, ms = 700): number {
   const [display, setDisplay] = useState(value);
+  // The value currently on screen — the start point for the next animation, even if the last one was cut short.
   const from = useRef(value);
   useEffect(() => {
     const start = performance.now();
     const a = from.current;
     const b = value;
-    if (a === b) return;
+    if (a === b) {
+      setDisplay(b);
+      return;
+    }
     let raf = 0;
     const tick = (now: number) => {
       const p = Math.min(1, (now - start) / ms);
       const e = 1 - Math.pow(1 - p, 3);
-      setDisplay(a + (b - a) * e);
+      const v = p < 1 ? a + (b - a) * e : b;
+      from.current = v;
+      setDisplay(v);
       if (p < 1) raf = requestAnimationFrame(tick);
-      else from.current = b;
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
