@@ -6,7 +6,7 @@ Target length: 6–8 minutes live, plus questions. Run `npm run dev`, open the l
 
 **Say:** "Every emirate already has systems that detect hazards: weather, GIS, police feeds. The gap is the last mile — making sure the right person gets the right verified instruction, and knowing what happened next. That is AMAN 360."
 
-Point at the live 3D district behind the headline. Click **Run the flash-flood demo**.
+Point at the live 3D district behind the headline. Click **Run the flash-flood demo** — it opens the twin with autoplay already running (`/command/twin?play=1`); press **Space** to pause whenever you want to talk.
 
 ## Step 0 — Normal city (20 s)
 
@@ -60,7 +60,9 @@ Responses arrive: Ahmed and Fatima confirm safe; **Sara requests assistance** (w
 
 ## Step 7 — Triage & government intelligence (50 s)
 
-Priority queue with explainable scores: Sara first (urgency 5, vulnerable registry, wheelchair, in zone) — accessible ambulance A-07 dispatched; watch it drive to Building C in the twin. Escalations for Yusuf: SMS unread → voice call → welfare check via building management.
+Priority queue with explainable scores: Sara first (urgency 5, vulnerable registry, wheelchair, in zone) — accessible ambulance A-07 dispatched; watch it drive to Building C in the twin while the medevac helicopter lands on the medical-centre helipad and Civil Defence CD-3 reaches Corniche View. Click any name in the queue to open the person drawer (Esc closes it). Escalations for Yusuf: SMS unread → voice call → welfare check via building management.
+
+Tip: the **Layers** menu in the twin (top right) lets you show one thing at a time — hazard polygon, routes, people, response units, sensors, traffic — and the **Environment** panel shows rainfall, wind, the UP-07 underpass water level and the drainage pump status.
 
 ## Step 8 — Operational picture (30 s) — switch to *Overview*
 

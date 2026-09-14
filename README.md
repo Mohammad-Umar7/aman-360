@@ -86,7 +86,7 @@ npm run dev
 
 Open http://localhost:3000. The landing page links into the command centre.
 
-Keyboard shortcuts inside the command centre: **Space** play / pause, **→ / ←** next / previous step, **0–8** jump to a step, **R** reset. The EN / AR toggle switches every message preview.
+Keyboard shortcuts inside the command centre: **Space** play / pause (or replay once the storyline has finished), **→ / ←** next / previous step, **0–8** jump to a step, **R** reset (also returns the camera to Auto), **Esc** closes the person drawer. Shortcuts stay quiet while you type or while a drawer is open. The EN / AR toggle in the top bar switches the language of every citizen-facing message preview; the console itself stays in English.
 
 Deep links for demos: `/command/twin?step=6&cam=overview`, `?step=2&cam=underpass`, `?step=8&cam=hospital`, `?step=0&cam=corniche&play=1` (cameras: auto, overview, underpass, closure, impact, residence, hospital, corniche, follow). Add `&debug=1` for on-screen renderer diagnostics.
 
