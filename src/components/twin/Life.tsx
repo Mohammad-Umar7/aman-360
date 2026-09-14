@@ -312,7 +312,7 @@ function Helicopter() {
     <group ref={g} visible={false}>
       <primitive object={model} />
       {show && (
-        <Html position={[0, 5.5, 0]} center zIndexRange={[25, 0]} style={{ pointerEvents: "none" }}>
+        <Html position={[0, 5.5, 0]} center zIndexRange={[8, 0]} style={{ pointerEvents: "none" }}>
           <div ref={labelRef} className="rounded-md border border-alert/50 bg-[#2a0f12]/90 px-2 py-0.5 text-[11px] font-medium text-white whitespace-nowrap backdrop-blur-md">
             Medevac H-2 · inbound
           </div>
@@ -362,7 +362,7 @@ function CivilDefenceUnit() {
     <group ref={g} visible={false}>
       <primitive object={model} />
       {show && (
-        <Html position={[0, 3.6, 0]} center zIndexRange={[25, 0]} style={{ pointerEvents: "none" }}>
+        <Html position={[0, 3.6, 0]} center zIndexRange={[8, 0]} style={{ pointerEvents: "none" }}>
           <div ref={labelRef} className="rounded-md border border-warn/50 bg-[#2a1c0f]/90 px-2 py-0.5 text-[11px] font-medium text-white whitespace-nowrap backdrop-blur-md">
             CD-3 Civil Defence · en route
           </div>
@@ -411,7 +411,7 @@ function BroadcastPulse() {
         <meshBasicMaterial color="#8ab8ff" />
       </mesh>
       {show && (
-        <Html position={[0, 3, 0]} center zIndexRange={[15, 0]} style={{ pointerEvents: "none" }}>
+        <Html position={[0, 3, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
           <div ref={labelRef} className="rounded-md border border-brand/40 bg-[#0b1220]/85 px-2 py-0.5 text-[11px] text-brand-2 whitespace-nowrap backdrop-blur-md">
             Cell broadcast
           </div>
@@ -444,7 +444,7 @@ function DrainageSensor() {
         <meshStandardMaterial color="#f2b544" emissive="#f2b544" emissiveIntensity={1.5} />
       </mesh>
       {show && (
-        <Html position={[-8, 4.6, -8.6]} center zIndexRange={[15, 0]} style={{ pointerEvents: "none" }}>
+        <Html position={[-8, 4.6, -8.6]} center zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
           <div className="rounded-md border border-warn/40 bg-[#1f160a]/90 px-2 py-0.5 text-[11px] text-[#ffd27a] whitespace-nowrap backdrop-blur-md">
             UP-07 drainage · water <span ref={ref}>0.0 m</span>
           </div>

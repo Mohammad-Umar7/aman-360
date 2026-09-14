@@ -1,8 +1,8 @@
 "use client";
 
 import { Html, Line } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { ASSEMBLY_POINTS, FLOOD_POLYGON, POI, UNDERPASS, buildingById } from "@/lib/data/district";
 import { pointAlong } from "@/lib/engine/geometry";
@@ -155,7 +155,7 @@ function Label({ ps, position, compact }: { ps: PersonState; position: [number, 
   const label = STATUS_LABEL[ps.status];
   const attention = ps.status === "help" || ps.status === "no_response";
   return (
-    <Html position={position} center zIndexRange={[30, 0]} style={{ pointerEvents: "none" }}>
+    <Html position={position} center zIndexRange={[9, 0]} style={{ pointerEvents: "none" }}>
       <button
         onClick={() => selectPerson(ps.person.id)}
         className={cn(
@@ -216,7 +216,7 @@ function ClosureLabel() {
   const visible = useSim((s) => closureVisible(s.step, s.t));
   if (!visible) return null;
   return (
-    <Html position={[(UNDERPASS.x0 + UNDERPASS.x1) / 2, 9, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
+    <Html position={[(UNDERPASS.x0 + UNDERPASS.x1) / 2, 9, 0]} center zIndexRange={[6, 0]} style={{ pointerEvents: "none" }}>
       <div className="rounded-md border border-alert/60 bg-[#2a0f12]/90 px-2.5 py-1 text-[11.5px] font-semibold tracking-wider text-[#ffb3ae] whitespace-nowrap backdrop-blur-md">UNDERPASS CLOSED · FLOODING</div>
     </Html>
   );
@@ -237,7 +237,7 @@ function AssemblyMarkers() {
             <cylinderGeometry args={[0.08, 0.08, 2.2, 6]} />
             <meshBasicMaterial color="#2bb8a6" />
           </mesh>
-          <Html position={[0, 4.4, 0]} center zIndexRange={[15, 0]} style={{ pointerEvents: "none" }}>
+          <Html position={[0, 4.4, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
             <div className="rounded-md border border-teal/40 bg-[#07201c]/85 px-2 py-0.5 text-[11px] text-teal-2 whitespace-nowrap backdrop-blur-md">{ap.name.split(" (")[0]}</div>
           </Html>
         </group>
@@ -280,7 +280,7 @@ function AmbulanceLabel() {
   const done = state.step.index >= 8;
   return (
     <group ref={ref}>
-      <Html position={[0, 0, 0]} center zIndexRange={[25, 0]} style={{ pointerEvents: "none" }}>
+      <Html position={[0, 0, 0]} center zIndexRange={[8, 0]} style={{ pointerEvents: "none" }}>
         <div className="rounded-md border border-alert/50 bg-[#2a0f12]/90 px-2 py-0.5 text-[11px] font-medium text-white whitespace-nowrap backdrop-blur-md">A-07 accessible ambulance · {done ? "on scene" : "en route"}</div>
       </Html>
     </group>
@@ -291,37 +291,23 @@ function VmsLabel() {
   const state = useScenario();
   if (state.step.index < 5) return null;
   return (
-    <Html position={[POI.vms.x, 13.5, -POI.vms.y - 1.5]} center zIndexRange={[12, 0]} style={{ pointerEvents: "none" }}>
+    <Html position={[POI.vms.x, 13.5, -POI.vms.y - 1.5]} center zIndexRange={[4, 0]} style={{ pointerEvents: "none" }}>
       <div className="rounded-md border border-brand/40 bg-[#0b1220]/85 px-2 py-0.5 text-[11px] text-brand-2 whitespace-nowrap backdrop-blur-md">VMS-07 · digital signage</div>
     </Html>
   );
-}
-
-/**
- * Overlay geometry lives on layer 1: the main camera renders it, but the water's
- * planar reflection camera (layer 0 only) does not — so the flood surface mirrors
- * the district, not the hazard fill and route lines drawn above it.
- */
-function OverlayLayer({ children }: { children: React.ReactNode }) {
-  const ref = useRef<THREE.Group>(null);
-  const camera = useThree((s) => s.camera);
-  useEffect(() => {
-    camera.layers.enable(1);
-    ref.current?.traverse((o) => o.layers.set(1));
-  }, [camera]);
-  return <group ref={ref}>{children}</group>;
 }
 
 export function Overlays({ compact, labels = true }: { compact?: boolean; labels?: boolean }) {
   const layers = useSim((s) => s.layers);
   return (
     <>
-      <OverlayLayer>
+      {/* The flood water is a procedural shader with no reflection camera, so overlays need no separate render layer. */}
+      <group>
         <HazardZone />
         {layers.routes && <Routes />}
         {layers.people && <HelpBeacon />}
         {labels && layers.people && <AssemblyMarkers />}
-      </OverlayLayer>
+      </group>
       {labels && layers.hazard && <ClosureLabel />}
       {labels && layers.people && <PeopleLabels compact={compact} />}
       {labels && layers.units && <AmbulanceLabel />}
