@@ -18,6 +18,16 @@ function contradicts(a: SourceClaim, b: SourceClaim): boolean {
   return definitive.has(a.value) && definitive.has(b.value) && a.value !== b.value;
 }
 
+/** Observation time as seconds of the incident day; date-only stamps (a page last updated weeks ago) rank oldest. */
+export function observedSec(c: SourceClaim): number {
+  const m = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(c.observedAt.trim());
+  if (m) return Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3] ?? 0);
+  return Number.NEGATIVE_INFINITY;
+}
+
+/** Hierarchy first (authority, domain, staleness), then the most recent observation. */
+export const compareClaims = (a: SourceClaim, b: SourceClaim): number => rankClaim(b) - rankClaim(a) || observedSec(b) - observedSec(a);
+
 function rankClaim(c: SourceClaim): number {
   const src = sourceById(c.sourceId);
   const domain = SUBJECTS[c.subject]?.domain;
@@ -38,25 +48,37 @@ export function detectContradictions(claims: SourceClaim[], nowLabel: string): C
   for (const [subject, list] of bySubject) {
     const conflicting = list.filter((c) => list.some((o) => o !== c && contradicts(c, o)));
     if (conflicting.length < 2) continue;
-    const ranked = [...conflicting].sort((a, b) => rankClaim(b) - rankClaim(a));
+    const ranked = [...conflicting].sort(compareClaims);
     const winner = ranked[0];
+    const runnerUp = ranked[1];
     const loser = ranked[ranked.length - 1];
+    // An exact tie (same authority, same observation time, different values) cannot be resolved automatically.
+    const resolved = compareClaims(winner, runnerUp) !== 0;
     const ws = sourceById(winner.sourceId);
     const ls = sourceById(loser.sourceId);
+    const domain = SUBJECTS[subject]?.domain.replace(/_/g, " ") ?? subject;
+    const corroborating = claims.filter((c) => c.subject !== subject && !c.stale).map((c) => sourceById(c.sourceId).org);
     out.push({
       id: `ctr-${subject.replace(/[^a-z0-9]/gi, "-")}`,
       subject,
       claims: conflicting,
-      winningClaimId: winner.id,
-      resolvedAt: nowLabel,
-      rationale: [
-        `${ws.org} holds authority rank ${ws.authorityRank} for ${SUBJECTS[subject]?.domain.replace("_", " ")}; ${ls.org} holds rank ${ls.authorityRank}.`,
-        loser.stale
-          ? `${ls.name} content is stale (last updated ${loser.observedAt}); the police observation is ${winner.observedAt}.`
-          : `Most recent authoritative observation wins (${winner.observedAt}).`,
-        "Corroborated by the municipality GIS hazard polygon and the meteorology alert.",
-      ],
-      action: `${ls.name} flagged for correction — correction notice queued to the web content team; page auto-annotated with the verified status until updated.`,
+      winningClaimId: resolved ? winner.id : undefined,
+      resolvedAt: resolved ? nowLabel : undefined,
+      rationale: resolved
+        ? [
+            `${ws.org} holds authority rank ${ws.authorityRank} for ${domain}; ${ls.org} holds rank ${ls.authorityRank}.`,
+            loser.stale
+              ? `${ls.name} content is stale (last updated ${loser.observedAt}); the ${ws.org} observation is ${winner.observedAt}.`
+              : `Most recent authoritative observation wins (${winner.observedAt}).`,
+            corroborating.length ? `Corroborated by ${corroborating.length} other live feed${corroborating.length === 1 ? "" : "s"}: ${Array.from(new Set(corroborating)).join(", ")}.` : "No corroborating feeds yet.",
+          ]
+        : [
+            `${ws.org} and ${sourceById(runnerUp.sourceId).org} hold equal authority for ${domain} and observed at the same time (${winner.observedAt}).`,
+            "No automatic resolution — escalated to the duty operator; no fact published for this subject.",
+          ],
+      action: resolved
+        ? `${ls.name} flagged for correction — correction notice queued to the web content team; page auto-annotated with the verified status until updated.`
+        : "Operator decision required before any channel may publish this subject.",
     });
   }
   return out;
@@ -68,9 +90,9 @@ export function verifyFacts(claims: SourceClaim[], contradictions: Contradiction
   for (const subject of subjects) {
     const list = claims.filter((c) => c.subject === subject);
     const ctr = contradictions.find((c) => c.subject === subject);
-    let chosen: SourceClaim | undefined;
-    if (ctr) chosen = list.find((c) => c.id === ctr.winningClaimId);
-    else chosen = [...list].sort((a, b) => rankClaim(b) - rankClaim(a))[0];
+    // An unresolved contradiction publishes nothing: no channel may state a fact the hierarchy could not verify.
+    if (ctr && !ctr.winningClaimId) continue;
+    const chosen = ctr ? list.find((c) => c.id === ctr.winningClaimId) : [...list].sort(compareClaims)[0];
     if (!chosen) continue;
     const src = sourceById(chosen.sourceId);
     const corroborating = claims.filter((c) => c.subject !== subject && !c.stale).length;

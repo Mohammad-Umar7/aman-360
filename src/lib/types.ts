@@ -113,8 +113,9 @@ export interface Contradiction {
   id: string;
   subject: string;
   claims: SourceClaim[];
-  winningClaimId: string;
-  resolvedAt: string;
+  /** Absent when the hierarchy cannot decide (exact tie) — the operator must resolve it. */
+  winningClaimId?: string;
+  resolvedAt?: string;
   rationale: string[];
   action: string;
 }

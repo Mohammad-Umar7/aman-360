@@ -6,6 +6,7 @@ import { Badge, LayerTag } from "@/components/ui/Badge";
 import { Arabic, EmptyState } from "@/components/ui/Misc";
 import { Panel } from "@/components/ui/Panel";
 import { SOURCES, SUBJECTS, sourceById } from "@/lib/data/sources";
+import { compareClaims } from "@/lib/engine/assurance";
 import type { Contradiction, Lang } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +18,8 @@ export function ContradictionPanel({ ctr, lang, step, className }: { ctr?: Contr
       </Panel>
     );
   }
-  const winner = ctr.claims.find((c) => c.id === ctr.winningClaimId)!;
-  const losers = ctr.claims.filter((c) => c.id !== ctr.winningClaimId);
+  const winner = ctr.winningClaimId ? ctr.claims.find((c) => c.id === ctr.winningClaimId) : undefined;
+  const ordered = winner ? [winner, ...ctr.claims.filter((c) => c.id !== winner.id)] : [...ctr.claims].sort(compareClaims);
   const explanation = explainContradiction(ctr);
   const ranks = [...SOURCES].filter((s) => s.domains.includes(SUBJECTS[ctr.subject]?.domain ?? "")).sort((a, b) => a.authorityRank - b.authorityRank);
   return (
@@ -27,23 +28,29 @@ export function ContradictionPanel({ ctr, lang, step, className }: { ctr?: Contr
       layer="deterministic"
       className={className}
       actions={
-        <Badge tone="safe" dot>
-          resolved {ctr.resolvedAt}
-        </Badge>
+        winner ? (
+          <Badge tone="safe" dot>
+            resolved {ctr.resolvedAt}
+          </Badge>
+        ) : (
+          <Badge tone="warn" dot>
+            operator decision required
+          </Badge>
+        )
       }
     >
       <div className="text-[12px] text-ink-3 mb-2">
         Subject · <span className="text-ink-2">{SUBJECTS[ctr.subject]?.label}</span>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        {[winner, ...losers].map((c) => {
+        {ordered.map((c) => {
           const src = sourceById(c.sourceId);
-          const win = c.id === winner.id;
+          const win = !!winner && c.id === winner.id;
           return (
             <div key={c.id} className={cn("rounded-lg border px-3 py-2.5", win ? "border-teal/40 bg-teal/[0.06]" : "border-alert/30 bg-alert/[0.05]")}>
               <div className="flex items-center gap-1.5 text-[11.5px] mb-1">
                 {win ? <Trophy size={12} className="text-teal-2" /> : <XCircle size={12} className="text-alert" />}
-                <span className={cn("font-semibold", win ? "text-teal-2" : "text-[#ff9b96]")}>{win ? "Authoritative" : "Overridden"}</span>
+                <span className={cn("font-semibold", win ? "text-teal-2" : "text-[#ff9b96]")}>{win ? "Authoritative" : winner ? "Overridden" : "Unresolved"}</span>
                 <Badge tone="neutral" className="ml-auto">
                   rank {src.authorityRank}
                 </Badge>
@@ -61,8 +68,8 @@ export function ContradictionPanel({ ctr, lang, step, className }: { ctr?: Contr
         <div className="eyebrow mb-1.5">Approved source hierarchy · {SUBJECTS[ctr.subject]?.domain.replace("_", " ")}</div>
         <ol className="flex items-stretch gap-1.5">
           {ranks.map((s, i) => {
-            const isWinner = s.id === winner.sourceId;
-            const isLoser = losers.some((l) => l.sourceId === s.id);
+            const isWinner = !!winner && s.id === winner.sourceId;
+            const isLoser = ordered.some((l) => l.sourceId === s.id && l.id !== winner?.id);
             return (
               <li key={s.id} className={cn("flex-1 rounded-md border px-2 py-1.5 text-[11.5px] leading-4 relative", isWinner ? "border-teal/40 bg-teal/[0.08] text-ink" : isLoser ? "border-alert/30 bg-alert/[0.05] text-ink-2" : "border-line text-ink-3")}>
                 <div className="num text-[10.5px] text-ink-4">#{i + 1} · rank {s.authorityRank}</div>
