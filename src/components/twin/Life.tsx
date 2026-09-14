@@ -79,33 +79,35 @@ function Traffic() {
     }
     return out;
   }, []);
-  useFrame((st) => {
+  // One clone per vehicle, built once — cloning inside render re-ran under StrictMode and on every Suspense resolve.
+  const objects = useMemo(() => spec.map((s) => cars[s.model]?.clone(true) ?? null), [spec, cars]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Each car keeps its own phase and is advanced by the frame delta, so changing speed (rain) never teleports it.
+  const phases = useRef<number[]>(spec.map((s) => s.phase));
+  useFrame((_, dt) => {
     const { step, layers } = useSim.getState();
-    const time = st.clock.getElapsedTime();
     const slow = step >= 1 ? 0.55 : 1;
     spec.forEach((s, i) => {
       const g = refs.current[i];
       if (!g) return;
       g.visible = layers.life;
-      place(g, LANES[s.lane], (s.phase + time * s.speed * slow) % 1);
+      phases.current[i] = (phases.current[i] + Math.min(dt, 0.1) * s.speed * slow) % 1;
+      place(g, LANES[s.lane], phases.current[i]);
     });
   });
   return (
     <>
-      {spec.map((s, i) => {
-        const model = cars[s.model];
-        if (!model) return null;
-        return (
+      {objects.map((obj, i) =>
+        obj ? (
           <group
             key={i}
             ref={(el) => {
               refs.current[i] = el;
             }}
           >
-            <primitive object={i === s.model ? model : model.clone(true)} />
+            <primitive object={obj} />
           </group>
-        );
-      })}
+        ) : null,
+      )}
     </>
   );
 }
