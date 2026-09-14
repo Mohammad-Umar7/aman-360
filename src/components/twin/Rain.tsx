@@ -60,6 +60,9 @@ export function Rain() {
       arr[o + 4] = y - DIR.y * LEN;
       arr[o + 5] = z - DIR.z * LEN;
     }
+    // Upload only the streaks in use, not the whole 9,000-segment buffer, every frame.
+    pos.clearUpdateRanges();
+    pos.addUpdateRange(0, count * 6);
     pos.needsUpdate = true;
   });
 

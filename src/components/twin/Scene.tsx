@@ -86,7 +86,8 @@ export function Scene({ interactive, compact, cameraMode, labels }: { interactiv
       <Life labels={labels} />
       <Signage />
       <Overlays compact={compact} labels={labels} />
-      <CameraRig interactive={interactive} mode={cameraMode} />
+      {/* No wheel zoom in the dashboard tile, so scrolling the page over the twin scrolls the page. */}
+      <CameraRig interactive={interactive} mode={cameraMode} zoom={!compact} />
       <ShoreBeyondDistrict />
       {/* ground beyond the modelled district (kept clear of the district itself so it never caps the underpass) */}
       <mesh rotation-x={-Math.PI / 2} position={[0, -0.1, -800]} receiveShadow>

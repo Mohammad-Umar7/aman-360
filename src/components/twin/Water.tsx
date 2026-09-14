@@ -155,7 +155,7 @@ function Debris({ count = 40 }: { count?: number }) {
     mesh.instanceMatrix.needsUpdate = true;
   });
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, count]} renderOrder={7}>
+    <instancedMesh ref={ref} args={[undefined, undefined, count]} frustumCulled={false}>
       <planeGeometry args={[0.5, 0.3]} />
       <meshStandardMaterial color="#3a2e1f" roughness={0.9} side={THREE.DoubleSide} />
     </instancedMesh>
@@ -199,7 +199,7 @@ export function Water() {
 
   return (
     <group ref={group} position={[CX, -2.5, 0]}>
-      <mesh rotation-x={-Math.PI / 2} renderOrder={5}>
+      <mesh rotation-x={-Math.PI / 2}>
         <planeGeometry args={[W, D, 160, 24]} />
         <shaderMaterial ref={mat} vertexShader={VERT} fragmentShader={FRAG} uniforms={uniforms} transparent depthWrite={false} />
       </mesh>

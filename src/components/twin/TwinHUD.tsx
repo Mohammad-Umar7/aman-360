@@ -5,7 +5,6 @@ import { Camera, CloudRain, Info, Layers, Radio, Waves, Wind } from "lucide-reac
 import { useState } from "react";
 import { Segmented } from "@/components/ui/Misc";
 import { LayerTag } from "@/components/ui/Badge";
-import { PersonDrawer } from "@/components/population/PersonDrawer";
 import { fmtInt } from "@/lib/format";
 import { TWIN_LAYERS, useScenario, useSim, type CameraPreset } from "@/lib/simulation/store";
 import { floodLevel, overcast, rainIntensity } from "@/lib/simulation/visual";
@@ -185,7 +184,6 @@ export function TwinHUD({ compact }: { compact?: boolean }) {
           )}
         </div>
       </div>
-      <PersonDrawer />
     </>
   );
 }

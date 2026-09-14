@@ -46,7 +46,7 @@ function followPose(kind: "ahmed" | "ambulance", step: number, t: number, out: {
   out.target.set(p.x + fx * 12, 1.5, -p.y + fz * 12);
 }
 
-export function CameraRig({ interactive, mode }: { interactive: boolean; mode?: "orbit" }) {
+export function CameraRig({ interactive, mode, zoom = true }: { interactive: boolean; mode?: "orbit"; zoom?: boolean }) {
   const controls = useRef<OrbitControlsImpl>(null);
   const camera = useThree((s) => s.camera);
   const userControl = useRef(false);
@@ -103,6 +103,7 @@ export function CameraRig({ interactive, mode }: { interactive: boolean; mode?: 
       ref={controls}
       makeDefault
       enabled={interactive}
+      enableZoom={zoom}
       enableDamping
       dampingFactor={0.08}
       minDistance={12}
