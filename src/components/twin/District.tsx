@@ -21,21 +21,48 @@ const DRIVEN = new Set([
 const WET_MATERIALS = new Set(["Asphalt", "Plaza", "Paving", "Sidewalk", "Curb", "Ground_Sand", "Concrete", "Roof", "Marble_Warm", "Beach", "Helipad"]);
 const WARM = new THREE.Color("#ffd9a0");
 
+/**
+ * useGLTF hands every mount the same cached scene, and the frame loop writes wetness into its
+ * materials in place. The dry baseline is therefore captured exactly once per material instance,
+ * or every remount would start from an already-darkened, already-glossy ground.
+ */
+const DRY_BASELINE = new WeakMap<THREE.MeshStandardMaterial, { rough: number; color: THREE.Color }>();
+const baselineOf = (m: THREE.MeshStandardMaterial) => {
+  let b = DRY_BASELINE.get(m);
+  if (!b) {
+    b = { rough: m.roughness, color: m.color.clone() };
+    DRY_BASELINE.set(m, b);
+  }
+  return b;
+};
+/** Highlight clones are cached per source material so remounts reuse them instead of cloning clones. */
+const HIGHLIGHT_CLONE = new WeakMap<THREE.MeshStandardMaterial, THREE.MeshStandardMaterial>();
+
 export function District() {
   const { scene, animations } = useGLTF(DISTRICT_URL, DRACO_PATH);
   const mixer = useMemo(() => new THREE.AnimationMixer(scene), [scene]);
-  const action = useMemo(() => {
-    if (!animations.length) return null;
-    const a = mixer.clipAction(animations[0]);
-    a.play();
-    a.paused = true;
-    return a;
-  }, [mixer, animations]);
+  // Every clip in the file is scrubbed together: the underpass water level and the eight
+  // street puddles (which start at zero scale and only appear once their clip is applied).
+  const actions = useMemo(
+    () =>
+      animations.map((clip) => {
+        const a = mixer.clipAction(clip);
+        a.play();
+        a.paused = true;
+        return a;
+      }),
+    [mixer, animations],
+  );
+  const duration = useMemo(() => Math.max(0, ...animations.map((c) => c.duration)), [animations]);
   const wet = useRef<{ m: THREE.MeshStandardMaterial; rough: number; color: THREE.Color }[]>([]);
   const glass = useRef<THREE.MeshStandardMaterial[]>([]);
   const lamps = useRef<THREE.MeshStandardMaterial[]>([]);
   const signals = useRef<Record<string, THREE.MeshStandardMaterial>>({});
   const highlight = useRef<Map<string, THREE.MeshStandardMaterial[]>>(new Map());
+  // Resolved once per scene instead of three full-scene traversals per frame.
+  const barriers = useRef<THREE.Object3D[]>([]);
+  const police = useRef<THREE.Object3D | null>(null);
+  const helpCache = useRef<{ step: number; buildings: Set<string> }>({ step: -1, buildings: new Set() });
 
   useEffect(() => {
     wet.current = [];
@@ -51,7 +78,7 @@ export function District() {
         if (!(m instanceof THREE.MeshStandardMaterial) || seen.has(m)) continue;
         seen.add(m);
         m.envMapIntensity = 0.9;
-        if (WET_MATERIALS.has(m.name)) wet.current.push({ m, rough: m.roughness, color: m.color.clone() });
+        if (WET_MATERIALS.has(m.name)) wet.current.push({ m, ...baselineOf(m) });
         if (m.name.startsWith("Glass_")) {
           m.envMapIntensity = 1.6;
           glass.current.push(m);
@@ -77,6 +104,9 @@ export function District() {
       const n = scene.getObjectByName(name);
       if (n) n.visible = false;
     }
+    barriers.current = ["Barrier_W", "Barrier_E"].map((n) => scene.getObjectByName(n)).filter((o): o is THREE.Object3D => !!o);
+    police.current = scene.getObjectByName("Police_Car") ?? null;
+    helpCache.current = { step: -1, buildings: new Set() };
     for (const id of ZONE_BUILDINGS) {
       const b = scene.getObjectByName(id);
       if (!b) continue;
@@ -86,7 +116,9 @@ export function District() {
         const mats = Array.isArray(o.material) ? o.material : [o.material];
         const cloned = mats.map((m) => {
           if (m instanceof THREE.MeshStandardMaterial && (m.name.startsWith("Facade") || m.name === "Trim")) {
-            const c = m.clone();
+            const c = HIGHLIGHT_CLONE.get(m) ?? m.clone();
+            HIGHLIGHT_CLONE.set(m, c);
+            HIGHLIGHT_CLONE.set(c, c); // a second mount sees the clone already in place
             list.push(c);
             return c;
           }
@@ -101,8 +133,9 @@ export function District() {
   const tmpColor = useMemo(() => new THREE.Color(), []);
   useFrame((st) => {
     const { step, t } = useSim.getState();
-    if (action && animations.length) {
-      action.time = floodLevel(step, t) * animations[0].duration * 0.999;
+    if (actions.length) {
+      const time = floodLevel(step, t) * duration * 0.999;
+      for (const a of actions) a.time = time;
       mixer.update(0);
     }
     const wetness = rainIntensity(step, t);
@@ -126,17 +159,18 @@ export function District() {
     if (signals.current.Signal_Green) signals.current.Signal_Green.emissiveIntensity = 0.3 + 4 * green;
     if (signals.current.Signal_Amber) signals.current.Signal_Amber.emissiveIntensity = 0.3 + 4 * amber;
     const closure = closureVisible(step, t);
-    for (const name of ["Barrier_W", "Barrier_E"]) {
-      const n = scene.getObjectByName(name);
-      if (n) n.visible = closure;
+    for (const n of barriers.current) n.visible = closure;
+    if (police.current) police.current.visible = policeVisible(step, t) && useSim.getState().layers.units;
+    // Which zone buildings hold a resident asking for help — recomputed only when the step changes.
+    if (helpCache.current.step !== step) {
+      const state = buildScenario(step);
+      const set = new Set<string>();
+      for (const p of state.people) if (p.person.buildingId && (p.status === "help" || p.status === "assistance_assigned")) set.add(p.person.buildingId);
+      helpCache.current = { step, buildings: set };
     }
-    const police = scene.getObjectByName("Police_Car");
-    if (police) police.visible = policeVisible(step, t) && useSim.getState().layers.units;
-    const state = buildScenario(step);
     const time = st.clock.getElapsedTime();
     for (const [id, mats] of highlight.current) {
-      const residents = state.people.filter((p) => p.person.buildingId === id);
-      const help = residents.some((p) => p.status === "help" || p.status === "assistance_assigned");
+      const help = helpCache.current.buildings.has(id);
       let intensity = 0;
       if (help) {
         tmpColor.set("#f0554f");

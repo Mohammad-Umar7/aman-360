@@ -80,7 +80,7 @@ function Traffic() {
     return out;
   }, []);
   // One clone per vehicle, built once — cloning inside render re-ran under StrictMode and on every Suspense resolve.
-  const objects = useMemo(() => spec.map((s) => cars[s.model]?.clone(true) ?? null), [spec, cars]); // eslint-disable-line react-hooks/exhaustive-deps
+  const objects = useMemo(() => spec.map((s) => cars[s.model]?.clone(true) ?? null), [spec, cars]);
   // Each car keeps its own phase and is advanced by the frame delta, so changing speed (rain) never teleports it.
   const phases = useRef<number[]>(spec.map((s) => s.phase));
   useFrame((_, dt) => {
