@@ -4,11 +4,12 @@
  */
 
 import { LANE, NODES, POI, nodeById } from "@/lib/data/district";
-import { clamp, lerp, smoothstep } from "@/lib/engine/geometry";
+import { clamp, lerp, polylineLength, smoothstep } from "@/lib/engine/geometry";
 import type { Point } from "@/lib/types";
 
 /** 0 = dry underpass, 1 = fully flooded (matches the Blender "Water_Underpass" animation range). */
 export function floodLevel(step: number, t: number): number {
+  t = clamp(t, 0, 1);
   if (step <= 0) return 0;
   if (step === 1) return 0.62 * smoothstep(t);
   if (step === 2) return lerp(0.62, 0.8, smoothstep(t));
@@ -18,6 +19,7 @@ export function floodLevel(step: number, t: number): number {
 
 /** Rain intensity 0..1 */
 export function rainIntensity(step: number, t: number): number {
+  t = clamp(t, 0, 1);
   if (step <= 0) return 0;
   if (step === 1) return smoothstep(t * 1.6);
   if (step <= 6) return 1;
@@ -27,6 +29,7 @@ export function rainIntensity(step: number, t: number): number {
 
 /** Sky darkness 0 (clear) .. 1 (storm) */
 export function overcast(step: number, t: number): number {
+  t = clamp(t, 0, 1);
   if (step <= 0) return 0.05;
   if (step === 1) return lerp(0.05, 0.85, smoothstep(t * 1.3));
   if (step <= 7) return 0.85;
@@ -49,6 +52,9 @@ export const AHMED_REROUTE: Point[] = [
   { x: P("K2").x - LANE, y: -LANE },
   { x: 146, y: -LANE },
 ];
+
+/** Progress along the reroute path that matches 62 % of the original path, so the car does not jump when the route switches. */
+const REROUTE_HANDOVER = (0.62 * polylineLength(AHMED_ORIGINAL)) / polylineLength(AHMED_REROUTE);
 
 /** Ambulance: hospital bay → Al Arouba St → Corniche St → Building C forecourt. */
 export const AMBULANCE_PATH: Point[] = [
@@ -82,13 +88,14 @@ export interface VehicleState {
 
 /** Where Ahmed's car is along the storyline. */
 export function ahmedVehicle(step: number, t: number): VehicleState {
+  t = clamp(t, 0, 1);
   if (step <= 2) {
     // creeping east in traffic: from -142 to about -104 over steps 0..2
     const p = clamp((step + t) / 3, 0, 1);
     return { path: AHMED_ORIGINAL, progress: lerp(0, 0.5, p), visible: true, rerouted: false };
   }
   if (step === 3) return { path: AHMED_ORIGINAL, progress: lerp(0.5, 0.62, t), visible: true, rerouted: false };
-  if (step === 4) return { path: AHMED_REROUTE, progress: lerp(0.09, 0.14, t), visible: true, rerouted: true };
+  if (step === 4) return { path: AHMED_REROUTE, progress: lerp(REROUTE_HANDOVER, 0.14, t), visible: true, rerouted: true };
   if (step === 5) return { path: AHMED_REROUTE, progress: lerp(0.14, 0.3, smoothstep(t)), visible: true, rerouted: true };
   if (step === 6) return { path: AHMED_REROUTE, progress: lerp(0.3, 0.6, t), visible: true, rerouted: true };
   if (step === 7) return { path: AHMED_REROUTE, progress: lerp(0.6, 0.88, t), visible: true, rerouted: true };
@@ -96,6 +103,7 @@ export function ahmedVehicle(step: number, t: number): VehicleState {
 }
 
 export function ambulanceVehicle(step: number, t: number): VehicleState {
+  t = clamp(t, 0, 1);
   if (step < 7) return { path: AMBULANCE_PATH, progress: 0, visible: true, rerouted: false };
   if (step === 7) return { path: AMBULANCE_PATH, progress: smoothstep(t), visible: true, rerouted: false };
   return { path: AMBULANCE_PATH, progress: 1, visible: true, rerouted: false };
@@ -109,6 +117,7 @@ export const CD_PATH: Point[] = [
 ];
 
 export function cdVehicle(step: number, t: number): VehicleState {
+  t = clamp(t, 0, 1);
   if (step < 7) return { path: CD_PATH, progress: 0, visible: false, rerouted: false };
   if (step === 7) return { path: CD_PATH, progress: smoothstep(clamp((t - 0.1) / 0.85, 0, 1)), visible: true, rerouted: false };
   return { path: CD_PATH, progress: 1, visible: true, rerouted: false };
@@ -123,6 +132,7 @@ export interface HeliState {
   visible: boolean;
 }
 export function helicopter(step: number, t: number): HeliState {
+  t = clamp(t, 0, 1);
   const start = { x: 320, y: -190 };
   const pad = { x: 118, y: -34 };
   if (step < 7) return { p: start, alt: 95, heading: Math.PI, rotor: 0, visible: false };
