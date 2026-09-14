@@ -3,12 +3,13 @@
 import { ASSEMBLY_POINTS, BUILDINGS, FLOOD_POLYGON, MAP_EXTENT, POI, ROADS, UNDERPASS, WATERFRONT } from "@/lib/data/district";
 import { pointAlong, pointInPolygon } from "@/lib/engine/geometry";
 import { useSim } from "@/lib/simulation/store";
-import { AMBULANCE_PATH, ahmedVehicle, ambulanceVehicle, closureVisible, hazardVisible, TRAFFIC_KF } from "@/lib/simulation/visual";
+import { AMBULANCE_PATH, ahmedVehicle, ambulanceVehicle, closureVisible, hazardVisible, TRAFFIC_KF_E } from "@/lib/simulation/visual";
 import type { PersonState, ScenarioState } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const STATUS_COLOR: Record<string, string> = {
   normal: "#6f7e94",
+  assessing: "#8b99ad",
   affected: "#f2b544",
   message_ready: "#9b8cff",
   sent: "#5aa9ff",
@@ -33,6 +34,38 @@ interface Props {
   zoom?: { cx: number; cy: number; size: number };
 }
 
+export interface MarkerPosition {
+  x: number;
+  y: number;
+  heading?: number;
+}
+
+/**
+ * Where each person is drawn: road users follow their animated paths, and residents who share a
+ * building are fanned out side by side so every marker stays clickable.
+ */
+export function resolvePositions(state: ScenarioState, step: number, t: number): Map<string, MarkerPosition> {
+  const ahmed = ahmedVehicle(step, t);
+  const ahmedPos = pointAlong(ahmed.path, ahmed.progress);
+  const hassanPos = pointAlong(TRAFFIC_KF_E, ((step * 0.11 + t * 0.1) % 1) * 0.9 + 0.05);
+  const positions = new Map<string, MarkerPosition>();
+  const groups = new Map<string, string[]>();
+  for (const p of state.people) {
+    const key = `${p.person.location.x},${p.person.location.y}`;
+    groups.set(key, [...(groups.get(key) ?? []), p.person.id]);
+  }
+  for (const p of state.people) {
+    const key = `${p.person.location.x},${p.person.location.y}`;
+    const siblings = groups.get(key) ?? [p.person.id];
+    const k = siblings.indexOf(p.person.id);
+    const dx = siblings.length > 1 ? (k - (siblings.length - 1) / 2) * 5.5 : 0;
+    positions.set(p.person.id, { x: p.person.location.x + dx, y: p.person.location.y });
+  }
+  positions.set("ahmed", { ...ahmedPos.p, heading: ahmedPos.heading });
+  positions.set("hassan", { ...hassanPos.p, heading: hassanPos.heading });
+  return positions;
+}
+
 export function DistrictMap({ state, className, focusPersonId, onSelectPerson, compact, zoom }: Props) {
   const step = state.step.index;
   const t = useSim((s) => s.t);
@@ -41,16 +74,9 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
   const E = MAP_EXTENT;
   const vb = zoom ? `${zoom.cx - zoom.size / 2} ${-zoom.cy - zoom.size / 2} ${zoom.size} ${zoom.size}` : `${-E} ${-E} ${2 * E} ${2 * E}`;
 
-  const ahmed = ahmedVehicle(step, t);
-  const ahmedPos = pointAlong(ahmed.path, ahmed.progress);
   const amb = ambulanceVehicle(step, t);
   const ambPos = pointAlong(amb.path, amb.progress);
-  const hassanPos = pointAlong(TRAFFIC_KF.slice().reverse(), ((step * 0.11 + t * 0.1) % 1) * 0.9 + 0.05);
-
-  const positions = new Map<string, { x: number; y: number; heading?: number }>();
-  for (const p of state.people) positions.set(p.person.id, p.person.location);
-  positions.set("ahmed", { ...ahmedPos.p, heading: ahmedPos.heading });
-  positions.set("hassan", { ...hassanPos.p, heading: hassanPos.heading });
+  const positions = resolvePositions(state, step, t);
 
   const ahmedState = state.people.find((p) => p.person.id === "ahmed");
   const showReroute = step >= 3 && !!ahmedState?.impact?.route?.alternative;
@@ -147,7 +173,7 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
           <g>
             <path d={polyPath} fill="rgba(240,85,79,0.10)" stroke="#f0554f" strokeWidth={0.9} strokeDasharray="3 2" className="animate-dash" />
             {!compact && (
-              <text x={FLOOD_POLYGON[4].x - 2} y={-FLOOD_POLYGON[4].y + 6} fontSize={4.2} fill="#ff9b96" textAnchor="end" fontWeight={600}>
+              <text x={FLOOD_POLYGON[6].x} y={-FLOOD_POLYGON[6].y - 3} fontSize={4.2} fill="#ff9b96" textAnchor="middle" fontWeight={600}>
                 FZ-0912 · severe
               </text>
             )}
@@ -157,7 +183,7 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
         {/* closure */}
         {closureOn && (
           <g>
-            <rect x={UNDERPASS.x0 - 6} y={-8} width={UNDERPASS.x1 - UNDERPASS.x0 + 12} height={16} fill="url(#hatch)" />
+            <rect x={UNDERPASS.x0 - 6} y={-UNDERPASS.y - 8} width={UNDERPASS.x1 - UNDERPASS.x0 + 12} height={16} fill="url(#hatch)" />
             {[POI.closureWest, POI.closureEast].map((p, i) => (
               <g key={i}>
                 <rect x={p.x - 1.2} y={-p.y - 8.5} width={2.4} height={17} fill="#f0554f" />
@@ -165,7 +191,7 @@ export function DistrictMap({ state, className, focusPersonId, onSelectPerson, c
               </g>
             ))}
             {!compact && (
-              <text x={(UNDERPASS.x0 + UNDERPASS.x1) / 2} y={-14} fontSize={4.6} textAnchor="middle" fill="#ff9b96" fontWeight={700} letterSpacing={0.6}>
+              <text x={(UNDERPASS.x0 + UNDERPASS.x1) / 2} y={-UNDERPASS.y - 14} fontSize={4.6} textAnchor="middle" fill="#ff9b96" fontWeight={700} letterSpacing={0.6}>
                 UNDERPASS CLOSED
               </text>
             )}
@@ -262,7 +288,7 @@ function PersonMarker({ ps, pos, focus, dim, onClick, compact, step }: { ps: Per
   const label = ps.person.spotlight && !compact;
   return (
     <g transform={`translate(${pos.x} ${-pos.y})`} opacity={dim ? 0.35 : 1} onClick={() => onClick?.(ps.person.id)} className={onClick ? "cursor-pointer" : undefined}>
-      {active && <circle r={6} fill="none" stroke={color} strokeWidth={0.6} className="animate-ping" style={{ transformOrigin: "center" }} />}
+      {active && <circle r={6} fill="none" stroke={color} strokeWidth={0.6} className="animate-ping" style={{ transformOrigin: "center", transformBox: "fill-box" }} />}
       {focus && <circle r={7.5} fill="none" stroke="#8ab8ff" strokeWidth={0.7} strokeDasharray="2 1.5" />}
       {isVehicle ? (
         <g transform={`rotate(${(-(pos.heading ?? 0) * 180) / Math.PI})`}>
