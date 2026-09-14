@@ -69,6 +69,7 @@ export function polylineEntersPolygon(pts: Point[], poly: Polygon): boolean {
 
 /** Point at normalised parameter t (0..1) along a polyline, with heading (radians). */
 export function pointAlong(pts: Point[], t: number): { p: Point; heading: number } {
+  if (pts.length === 0) return { p: { x: 0, y: 0 }, heading: 0 };
   const total = polylineLength(pts);
   if (pts.length === 1 || total === 0) return { p: pts[0], heading: 0 };
   let target = Math.max(0, Math.min(1, t)) * total;
