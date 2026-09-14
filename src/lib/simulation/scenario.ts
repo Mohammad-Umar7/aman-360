@@ -44,7 +44,7 @@ export const IMPACT_CONTEXT = { hazard: HAZARD, closedEdges: CLOSED_EDGES };
 const cache = new Map<number, ScenarioState>();
 
 export function buildScenario(stepIndex: number): ScenarioState {
-  const s = clamp(Math.round(stepIndex), 0, LAST_STEP);
+  const s = Number.isFinite(stepIndex) ? clamp(Math.round(stepIndex), 0, LAST_STEP) : 0;
   const cached = cache.get(s);
   if (cached) return cached;
 

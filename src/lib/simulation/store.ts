@@ -42,6 +42,12 @@ interface SimStore {
   setCamera: (c: CameraPreset) => void;
 }
 
+/** Clamp any input (deep-link strings, NaN, out-of-range numbers) to a valid step index. */
+export const clampStep = (n: number) => (Number.isFinite(n) ? Math.max(0, Math.min(LAST_STEP, Math.round(n))) : 0);
+
+/** Playback has run to the end of the storyline. */
+const atEnd = (s: { step: number; t: number }) => s.step >= LAST_STEP && s.t >= 1;
+
 export const useSim = create<SimStore>((set, get) => ({
   step: 0,
   t: 0,
@@ -52,7 +58,10 @@ export const useSim = create<SimStore>((set, get) => ({
   started: false,
   layers: { hazard: true, routes: true, people: true, units: true, sensors: true, life: true },
   toggleLayer: (l) => set((s) => ({ layers: { ...s.layers, [l]: !s.layers[l] } })),
-  setStep: (n) => set({ step: Math.max(0, Math.min(LAST_STEP, n)), t: 0, started: n > 0 || get().started }),
+  setStep: (n) => {
+    const step = clampStep(n);
+    set({ step, t: 0, started: step > 0 || get().started });
+  },
   next: () => {
     const { step } = get();
     if (step >= LAST_STEP) return set({ playing: false, t: 1 });
@@ -60,12 +69,12 @@ export const useSim = create<SimStore>((set, get) => ({
   },
   prev: () => set((s) => ({ step: Math.max(0, s.step - 1), t: 0 })),
   reset: () => set({ step: 0, t: 0, playing: false, started: false, selectedPersonId: null }),
-  play: () => set({ playing: true, started: true }),
+  play: () => set((s) => (atEnd(s) ? { step: 0, t: 0, playing: true, started: true } : { playing: true, started: true })),
   pause: () => set({ playing: false }),
-  toggle: () => set((s) => ({ playing: !s.playing, started: true })),
+  toggle: () => set((s) => (s.playing ? { playing: false } : atEnd(s) ? { step: 0, t: 0, playing: true, started: true } : { playing: true, started: true })),
   tick: (dt) => {
     const { step, t, playing } = get();
-    if (!playing) return;
+    if (!playing || !Number.isFinite(dt) || dt <= 0) return;
     const duration = STEPS[step].durationSec;
     const nt = t + dt / duration;
     if (nt >= 1) {
@@ -98,4 +107,4 @@ export function useSimulationClock() {
   }, []);
 }
 
-export const stepMeta = (n: number) => STEPS[Math.max(0, Math.min(LAST_STEP, n))];
+export const stepMeta = (n: number) => STEPS[clampStep(n)];
