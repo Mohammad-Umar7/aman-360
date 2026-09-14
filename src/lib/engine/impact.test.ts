@@ -84,11 +84,16 @@ describe("selectChannels", () => {
 
 describe("assessPerson — closures, reachability and the deciding rule", () => {
   const driver = { ...personById("ahmed"), id: "x", location: { x: -104, y: -3.6 } };
-  it("does not treat a route that merely ends at the closure mouth as blocked", () => {
-    const a = assessPerson({ ...driver, route: ["AW", "A1", "AU1"] }, IMPACT_CONTEXT);
+  it("does not treat a route that stops short of the closure and the polygon as blocked", () => {
+    const a = assessPerson({ ...driver, route: ["AW", "A1"] }, IMPACT_CONTEXT);
     expect(a.affected).toBe(false);
     expect(a.action).toBe("NO_ACTION");
     expect(fired("omar", "R-02")).toBe(false);
+  });
+  it("still blocks a route that ends at the closure mouth because that approach lies inside the polygon", () => {
+    const a = assessPerson({ ...driver, route: ["AW", "A1", "AU1"] }, IMPACT_CONTEXT);
+    expect(a.affected).toBe(true);
+    expect(a.route?.blockReason).toBe("hazard");
   });
   it("names the rule that decided the action", () => {
     expect(assess("ahmed").decidedBy).toBe("R-03");
