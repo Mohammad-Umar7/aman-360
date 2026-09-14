@@ -21,6 +21,13 @@ export function LayerActivity({ state, className }: { state: ScenarioState; clas
   const s = state.step.index;
   const affected = state.people.filter((p) => p.impact?.affected).length;
   const msgs = state.people.filter((p) => p.message).length;
+  const routes = state.people.filter((p) => p.person.route).length;
+  const accessible = state.people.filter((p) => p.impact?.rules.some((r) => r.rule === "R-06" && r.fired)).length;
+  const adapted = state.people.filter((p) => p.message && p.impact?.rules.some((r) => r.rule === "R-06" && r.fired)).length;
+  const checks = state.channelChecks.flatMap((c) => c.checks);
+  const failing = checks.filter((c) => !c.pass).length;
+  const channels = state.channelChecks.length;
+  const resolved = state.kpis.contradictionsResolved;
   return (
     <Panel title="Two intelligence layers" eyebrow="Architecture" className={className}>
       <div className="grid grid-cols-2 gap-4">
@@ -29,14 +36,14 @@ export function LayerActivity({ state, className }: { state: ScenarioState; clas
             <ShieldCheck size={13} /> Deterministic safety
           </div>
           <ul className="divide-y divide-line">
-            <Row label="Source hierarchy & contradictions" on={s >= 2} count={s >= 2 ? "1 resolved" : undefined} />
+            <Row label="Source hierarchy & contradictions" on={s >= 2} count={s >= 2 ? `${resolved}/${state.contradictions.length} resolved` : undefined} />
             <Row label="Hazard polygon checks" on={s >= 3} count={s >= 3 ? `${state.people.length} profiles` : undefined} />
-            <Row label="Route × closure intersection" on={s >= 3} count={s >= 3 ? "2 routes" : undefined} />
+            <Row label="Route × closure intersection" on={s >= 3} count={s >= 3 ? `${routes} routes` : undefined} />
             <Row label="Approved action selection" on={s >= 3} count={s >= 3 ? `${affected} actions` : undefined} />
-            <Row label="Accessibility-safe filtering" on={s >= 3} count={s >= 3 ? "3 profiles" : undefined} />
-            <Row label="Channel consistency checks" on={s >= 2} count={s >= 5 ? "6/6 pass" : s >= 2 ? "1 fail" : undefined} />
+            <Row label="Accessibility-safe filtering" on={s >= 3} count={s >= 3 ? `${accessible} profiles` : undefined} />
+            <Row label="Channel consistency checks" on={s >= 2} count={s >= 2 ? (failing ? `${failing} fail · ${channels} channels` : `${checks.length}/${checks.length} pass`) : undefined} />
             <Row label="Escalation rules E-01…E-03" on={s >= 6} count={s >= 6 ? "running" : undefined} />
-            <Row label="Triage scoring" on={s >= 6} count={s >= 7 ? `${state.triage.length} ranked` : undefined} />
+            <Row label="Triage scoring" on={s >= 6} count={s >= 6 ? `${state.triage.length} ranked` : undefined} />
           </ul>
         </div>
         <div>
@@ -46,8 +53,8 @@ export function LayerActivity({ state, className }: { state: ScenarioState; clas
           <ul className="divide-y divide-line">
             <Row label="Contradiction explanation" on={s >= 2} />
             <Row label="Personalised wording (EN/AR)" on={s >= 4} count={s >= 4 ? `${msgs} messages` : undefined} />
-            <Row label="Accessibility-aware phrasing" on={s >= 4} count={s >= 4 ? "3 adapted" : undefined} />
-            <Row label="Multi-channel adaptation" on={s >= 4} count={s >= 4 ? "6 channels" : undefined} />
+            <Row label="Accessibility-aware phrasing" on={s >= 4} count={s >= 4 ? `${adapted} adapted` : undefined} />
+            <Row label="Multi-channel adaptation" on={s >= 4} count={s >= 4 ? `${channels} channels` : undefined} />
             <Row label="Response classification" on={s >= 6} count={s >= 6 ? `${state.responses.length} classified` : undefined} />
             <Row label="Grouping & prioritisation hints" on={s >= 6} />
             <Row label="Operator summaries" on={s >= 3} count={s >= 3 ? "refreshing" : undefined} />

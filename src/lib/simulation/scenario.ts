@@ -89,7 +89,9 @@ export function buildScenario(stepIndex: number): ScenarioState {
     ...kpisBase,
     contradictions: Math.max(kpisBase.contradictions, contradictions.length),
     contradictionsResolved: contradictions.filter((c) => !!c.winningClaimId).length,
-    consistency: channelChecks.length ? consistencyScore(channelChecks.filter((c) => c.published)) : 1,
+    // Share of all checks passing across every prepared or published channel, so the KPI, the
+    // consistency table and the layer-activity panel all describe the same set.
+    consistency: channelChecks.length ? consistencyScore(channelChecks) : 1,
     unitsDispatched: s >= 7 ? kpisBase.unitsDispatched : 0,
   };
 

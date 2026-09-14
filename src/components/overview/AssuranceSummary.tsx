@@ -27,17 +27,17 @@ export function AssuranceSummary({ state }: { state: ScenarioState }) {
       <div className="flex items-center gap-4">
         <Ring value={state.facts.length ? overallAssurance(state) : 0} tone="teal" size={72} label={state.facts.length ? "Assurance" : "Not yet verified"} sub={state.facts.length ? `${state.facts.length} verified facts` : `${state.claims.length} claims received`} />
         <div className="flex-1">
-          <Ring value={state.channelChecks.length ? state.kpis.consistency : 0} tone={state.kpis.consistency >= 0.99 ? "safe" : state.channelChecks.length ? "warn" : "neutral"} size={72} label="Channel consistency" sub={state.channelChecks.length ? `${state.channelChecks.filter((c) => c.published).length} channels checked` : "no channels published"} />
+          <Ring value={state.channelChecks.length ? state.kpis.consistency : 0} tone={!state.channelChecks.length ? "neutral" : state.kpis.consistency >= 0.99 ? "safe" : "warn"} size={72} label="Channel consistency" sub={state.channelChecks.length ? `${state.channelChecks.length} channel${state.channelChecks.length === 1 ? "" : "s"} checked` : "no channels prepared"} />
         </div>
       </div>
       <div className="mt-3">
-        <Kv k="Sources checked" v={`${step >= 1 ? SOURCES.length : SOURCES.length} feeds · ${state.claims.length} claims`} />
+        <Kv k="Sources checked" v={`${SOURCES.length} feeds · ${state.claims.length} claims`} />
         <Kv
           k="Contradictions"
           v={
             ctr ? (
               <span className="flex items-center gap-1.5 text-warn">
-                <GitCompareArrows size={13} /> 1 detected · resolved
+                <GitCompareArrows size={13} /> {state.contradictions.length} detected · {state.kpis.contradictionsResolved === state.contradictions.length ? "resolved" : "operator decision required"}
               </span>
             ) : step >= 1 ? (
               <span className="text-ink-3">scanning…</span>

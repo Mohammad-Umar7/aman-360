@@ -39,8 +39,7 @@ export function VerifiedFacts({ facts, lang, className }: { facts: VerifiedFact[
 }
 
 export function ChannelConsistency({ checks, className, dense }: { checks: ChannelCheck[]; className?: string; dense?: boolean }) {
-  const published = checks.filter((c) => c.published);
-  const consistent = published.filter((c) => c.consistent).length;
+  const consistent = checks.filter((c) => c.consistent).length;
   return (
     <Panel
       title="Channel consistency"
@@ -50,8 +49,8 @@ export function ChannelConsistency({ checks, className, dense }: { checks: Chann
       padded={false}
       actions={
         checks.length ? (
-          <Badge tone={consistent === published.length ? "safe" : "warn"} dot>
-            {consistent}/{published.length} consistent
+          <Badge tone={consistent === checks.length ? "safe" : "warn"} dot>
+            {consistent}/{checks.length} consistent
           </Badge>
         ) : undefined
       }
