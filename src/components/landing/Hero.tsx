@@ -68,7 +68,7 @@ export function Hero() {
             Existing systems detect the emergency. AMAN makes sure the right person receives the right verified action — and tells government what happened next.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/command/twin" onClick={enter} className="inline-flex items-center gap-2 rounded-xl bg-brand px-5 h-12 text-[15px] font-medium text-white shadow-[0_0_0_1px_rgba(79,141,247,0.5),0_16px_40px_-12px_rgba(79,141,247,0.7)] hover:bg-[#5f98ff]">
+            <Link href="/command/twin?play=1" onClick={enter} className="inline-flex items-center gap-2 rounded-xl bg-brand px-5 h-12 text-[15px] font-medium text-white shadow-[0_0_0_1px_rgba(79,141,247,0.5),0_16px_40px_-12px_rgba(79,141,247,0.7)] hover:bg-[#5f98ff]">
               <Play size={16} /> Run the flash-flood demo
             </Link>
             <Link href="/command" onClick={enter} className="inline-flex items-center gap-2 rounded-xl bg-white/[0.07] border border-white/15 px-5 h-12 text-[15px] font-medium text-ink hover:bg-white/[0.12]">
