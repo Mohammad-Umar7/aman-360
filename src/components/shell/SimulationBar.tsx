@@ -10,14 +10,20 @@ import { cn } from "@/lib/utils";
 
 function Progress() {
   const t = useSim((s) => s.t);
-  return <div className="absolute left-0 top-0 h-full bg-brand/70 rounded-full transition-[width] duration-100" style={{ width: `${t * 100}%` }} />;
+  // No CSS transition: the clock already advances every 40 ms, and a transition would sweep backwards on each step change.
+  return <div className="absolute left-0 top-0 h-full bg-brand/70 rounded-full" style={{ width: `${t * 100}%` }} />;
 }
 
 export function SimulationBar() {
   const step = useSim((s) => s.step);
   const playing = useSim((s) => s.playing);
   const started = useSim((s) => s.started);
-  const { setStep, next, prev, reset, toggle } = useSim();
+  // Select each action individually: a bare useSim() would re-render the whole bar 25× a second with `t`.
+  const setStep = useSim((s) => s.setStep);
+  const next = useSim((s) => s.next);
+  const prev = useSim((s) => s.prev);
+  const reset = useSim((s) => s.reset);
+  const toggle = useSim((s) => s.toggle);
   const meta = STEPS[step];
 
   return (
@@ -46,9 +52,12 @@ export function SimulationBar() {
           return (
             <li key={s.id} className="flex-1 min-w-0">
               <button
+                type="button"
                 onClick={() => setStep(s.index)}
                 className={cn("w-full text-left group", state === "todo" && "opacity-60 hover:opacity-90")}
                 title={`${s.index + 1}. ${s.title}`}
+                aria-current={state === "current" ? "step" : undefined}
+                aria-label={`Step ${s.index}: ${s.title}`}
               >
                 <div className="relative h-1 rounded-full bg-white/[0.08] overflow-hidden">
                   {state === "done" && <div className="absolute inset-0 bg-brand/70 rounded-full" />}
