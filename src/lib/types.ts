@@ -160,6 +160,8 @@ export interface Person {
   };
   consent: Consent;
   vulnerableRegistry?: boolean;
+  /** Registered form of address for languages with grammatical agreement (Arabic imperatives). */
+  formOfAddress?: "feminine" | "masculine";
   spotlight: boolean;
 }
 

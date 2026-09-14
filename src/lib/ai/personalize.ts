@@ -8,6 +8,7 @@
 
 import { ASSEMBLY_POINTS, REAL_SCALE, ROADS } from "@/lib/data/district";
 import { ACTIONS } from "@/lib/data/sop";
+import { sourceById } from "@/lib/data/sources";
 import { dist } from "@/lib/engine/geometry";
 import { trace } from "@/lib/ai/provider";
 import { clockAt } from "@/lib/format";
@@ -33,7 +34,8 @@ function compass(dx: number, dy: number): { en: string; ar: string } {
   return { en: dirs[idx][0], ar: dirs[idx][1] };
 }
 
-const feminine = (p: Person) => ["fatima", "sara", "layla", "mariam", "noura", "aisha"].includes(p.id);
+/** Arabic imperatives agree with the recipient's registered form of address; unknown defaults to the masculine/neutral form. */
+const feminine = (p: Person) => p.formOfAddress === "feminine";
 
 export function coreMessage(person: Person, impact: ImpactAssessment): { en: string; ar: string } {
   switch (impact.action) {
@@ -58,9 +60,10 @@ export function coreMessage(person: Person, impact: ImpactAssessment): { en: str
       };
     case "OFFER_ASSISTANCE":
       if (!person.accessibility.smartphone) {
+        // The SMS variant appends the keyword reply path; the voice variant appends the key-press path.
         return {
-          en: "Your area is affected by flooding. Accessible assistance is available. Reply HELP if you need support.",
-          ar: "منطقتك متأثرة بتجمّع مياه الأمطار. تتوفر مساعدة ميسّرة. أرسل «مساعدة» إذا كنت بحاجة إلى دعم.",
+          en: "Your area is affected by flooding. Accessible assistance is available if you need support.",
+          ar: `منطقتك متأثرة بتجمّع مياه الأمطار. تتوفر مساعدة ميسّرة إذا ${feminine(person) ? "كنتِ" : "كنت"} بحاجة إلى دعم.`,
         };
       }
       return {
@@ -90,10 +93,12 @@ const APP_TITLES: Record<ActionCode, { en: string; ar: string; cta: string[]; ct
   NO_ACTION: { en: "", ar: "", cta: [], ctaAr: [] },
 };
 
-export function channelVariants(person: Person, impact: ImpactAssessment, core: { en: string; ar: string }): ChannelVariant[] {
+export function channelVariants(person: Person, impact: ImpactAssessment, core: { en: string; ar: string }, facts: VerifiedFact[] = []): ChannelVariant[] {
   const t = APP_TITLES[impact.action];
   const interactive = impact.action !== "REROUTE";
-  const smsTail = interactive ? { en: " Reply SAFE or HELP.", ar: " أرسل «بخير» أو «مساعدة»." } : { en: "", ar: "" };
+  const smsTail = interactive ? { en: " Reply SAFE or HELP.", ar: ` ${feminine(person) ? "أرسلي" : "أرسل"} «بخير» أو «مساعدة».` } : { en: "", ar: "" };
+  const road = facts.find((f) => f.subject === "road:al-majaz-underpass");
+  const verified = road ? { en: `(${road.verifiedAt}, ${sourceById(road.sourceId).org})`, ar: `(${road.verifiedAt}، ${sourceById(road.sourceId).nameAr})` } : { en: "(pending verification)", ar: "(بانتظار التوثيق)" };
   const variants: ChannelVariant[] = [
     {
       channel: "sms",
@@ -119,8 +124,8 @@ export function channelVariants(person: Person, impact: ImpactAssessment, core: 
     },
     {
       channel: "operator",
-      en: `1. Confirm the caller's location and whether they are driving.\n2. Verified status (14:05:29, Police Operations): Al Majaz Road underpass is CLOSED in both directions.\n3. Advise: ${core.en}\n4. Ask: "Are you safe? Do you need assistance?" — log the answer.`,
-      ar: `1. تأكد من موقع المتصل وما إذا كان يقود.\n2. الحالة الموثّقة (14:05:29، عمليات الشرطة): نفق طريق المجاز مغلق في الاتجاهين.\n3. التوجيه: ${core.ar}\n4. اسأل: «هل أنت بخير؟ هل تحتاج إلى مساعدة؟» — سجّل الإجابة.`,
+      en: `1. Confirm the caller's location and whether they are driving.\n2. Verified status ${verified.en}: Al Majaz Road underpass is CLOSED in both directions.\n3. Advise: ${core.en}\n4. Ask: "Are you safe? Do you need assistance?" — log the answer.`,
+      ar: `1. تأكد من موقع المتصل وما إذا كان يقود.\n2. الحالة الموثّقة ${verified.ar}: نفق طريق المجاز مغلق في الاتجاهين.\n3. التوجيه: ${core.ar}\n4. اسأل: «هل أنت بخير؟ هل تحتاج إلى مساعدة؟» — سجّل الإجابة.`,
       meta: "Call-centre script · 800-AMAN",
     },
   ];
@@ -130,28 +135,29 @@ export function channelVariants(person: Person, impact: ImpactAssessment, core: 
 /** Public channels are derived once from the verified facts, not per person. */
 export function publicVariants(facts: VerifiedFact[]): ChannelVariant[] {
   const road = facts.find((f) => f.subject === "road:al-majaz-underpass");
-  const verified = road ? `Verified ${road.verifiedAt} · Police Operations` : "";
+  const src = road ? sourceById(road.sourceId) : undefined;
+  const verified = road && src ? { en: ` Verified ${road.verifiedAt} · ${src.org}.`, ar: ` موثّق ${road.verifiedAt} · ${src.nameAr}.` } : { en: "", ar: "" };
   return [
     {
       channel: "web",
       title: "Al Majaz Road underpass closed — flooding",
       titleAr: "إغلاق نفق طريق المجاز — تجمّع مياه الأمطار",
-      en: `Al Majaz Road (underpass section) is closed in both directions due to flooding. Use King Faisal Street or Corniche Street. Residents in the affected blocks should remain indoors until roads reopen. ${verified}.`,
-      ar: `طريق المجاز (قسم النفق) مغلق في الاتجاهين بسبب تجمّع مياه الأمطار. يُرجى استخدام شارع الملك فيصل أو شارع الكورنيش. على سكان المباني المتأثرة البقاء في منازلهم حتى إعادة فتح الطرق. موثّق ${road?.verifiedAt ?? ""} · عمليات الشرطة.`,
+      en: `Al Majaz Road (underpass section) is closed in both directions due to flooding. Use King Faisal Street or Corniche Street. Residents in the affected blocks should remain indoors until roads reopen.${verified.en}`,
+      ar: `طريق المجاز (قسم النفق) مغلق في الاتجاهين بسبب تجمّع مياه الأمطار. يُرجى استخدام شارع الملك فيصل أو شارع الكورنيش. على سكان المباني المتأثرة البقاء في منازلهم حتى إعادة فتح الطرق.${verified.ar}`,
       meta: "Public portal banner · replaces stale roadworks page content",
     },
     {
       channel: "signage",
       en: "AL MAJAZ RD CLOSED\nFLOODING AHEAD\nUSE KING FAISAL ST",
-      ar: "طريق المجاز مغلق\nتجمّع مياه أمامك\nاستخدم شارع الملك فيصل",
-      meta: "VMS-07 westbound approach · 3 lines × 20 chars",
+      ar: "طريق المجاز مغلق\nتجمّع مياه أمامك\nعبر شارع الملك فيصل",
+      meta: "VMS-07 eastbound approach · 3 lines × 20 chars",
     },
   ];
 }
 
 export function composeMessage(person: Person, impact: ImpactAssessment, facts: VerifiedFact[], createdAtSec: number, seq: number): Message {
   const core = coreMessage(person, impact);
-  const variants = channelVariants(person, impact, core);
+  const variants = channelVariants(person, impact, core, facts);
   const action = ACTIONS[impact.action];
   const road = facts.find((f) => f.subject === "road:al-majaz-underpass");
   const review = impact.action === "AVOID_AREA";

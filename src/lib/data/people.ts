@@ -30,6 +30,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: "fatima",
+    formOfAddress: "feminine",
     name: "Fatima Al Zaabi",
     nameAr: "فاطمة الزعابي",
     initials: "FZ",
@@ -46,6 +47,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: "sara",
+    formOfAddress: "feminine",
     name: "Sara Hassan",
     nameAr: "سارة حسن",
     initials: "SH",
@@ -79,6 +81,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: "layla",
+    formOfAddress: "feminine",
     name: "Layla Ahmed",
     nameAr: "ليلى أحمد",
     initials: "LA",
@@ -111,6 +114,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: "mariam",
+    formOfAddress: "feminine",
     name: "Mariam Saeed",
     nameAr: "مريم سعيد",
     initials: "MS",
@@ -143,6 +147,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: "noura",
+    formOfAddress: "feminine",
     name: "Noura Abdullah",
     nameAr: "نورة عبدالله",
     initials: "NA",
@@ -176,6 +181,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: "aisha",
+    formOfAddress: "feminine",
     name: "Aisha Kamal",
     nameAr: "عائشة كمال",
     initials: "AK",

@@ -216,7 +216,7 @@ function buildChannelChecks(s: number, people: PersonState[], facts: ScenarioSta
   let variants: ChannelVariant[] = [];
   const ahmed = people.find((p) => p.person.id === "ahmed");
   if (s >= 4 && ahmed?.message) variants = [...ahmed.message.variants];
-  else if (s >= 3 && ahmed?.impact) variants = channelVariants(ahmed.person, ahmed.impact, coreMessage(ahmed.person, ahmed.impact));
+  else if (s >= 3 && ahmed?.impact) variants = channelVariants(ahmed.person, ahmed.impact, coreMessage(ahmed.person, ahmed.impact), facts);
   const all = [...(s >= 3 ? variants : []), ...pub];
   const checks = checkChannels(all, facts, clockAt(s >= 5 ? 390 : 235), { webStale: s < 5 });
   return checks.map((c) => ({
