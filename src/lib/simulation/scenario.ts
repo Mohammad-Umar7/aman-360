@@ -93,8 +93,9 @@ export function buildScenario(stepIndex: number): ScenarioState {
     unitsDispatched: s >= 7 ? kpisBase.unitsDispatched : 0,
   };
 
-  const timeline: TimelineEvent[] = TIMELINE.filter((e) => e[1] <= s).map((e, i) => ({
-    id: `tl-${i}`,
+  // Events are keyed by their scripted second so ids stay stable however the list is filtered.
+  const timeline: TimelineEvent[] = TIMELINE.filter((e) => e[1] <= s && e[0] <= now).map((e) => ({
+    id: `tl-${e[0]}`,
     at: clockAt(e[0]),
     step: e[1],
     layer: e[2],
