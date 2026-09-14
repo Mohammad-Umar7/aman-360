@@ -42,9 +42,9 @@ export const NODES: RoadNode[] = [
   { id: "C2", p: { x: 72, y: -64 } },
   { id: "CE", p: { x: 150, y: -64 } },
   { id: "WN", p: { x: -72, y: 150 } },
-  { id: "WS", p: { x: -72, y: -150 } },
+  { id: "WS", p: { x: -72, y: -70 } },
   { id: "RN", p: { x: 72, y: 150 } },
-  { id: "RS", p: { x: 72, y: -150 } },
+  { id: "RS", p: { x: 72, y: -70 } },
 ];
 
 export const EDGES: RoadEdge[] = [

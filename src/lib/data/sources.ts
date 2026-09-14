@@ -77,7 +77,7 @@ export const SOURCES: SourceFeed[] = [
 export const SUBJECTS: Record<string, { label: string; labelAr: string; domain: string }> = {
   "road:al-majaz-underpass": { label: "Al Majaz Road — underpass section", labelAr: "طريق المجاز — قسم النفق", domain: "road_status" },
   "hazard:FZ-0912": { label: "Flood hazard polygon FZ-0912", labelAr: "مضلع مخاطر الفيضان FZ-0912", domain: "hazard_area" },
-  "weather:sharjah-central": { label: "Weather alert — Abu Dhabi central", labelAr: "تنبيه الطقس — وسط أبوظبي", domain: "weather" },
+  "weather:abu-dhabi-central": { label: "Weather alert — Abu Dhabi central", labelAr: "تنبيه الطقس — وسط أبوظبي", domain: "weather" },
   "sop:flash-flood": { label: "Approved flash-flood actions", labelAr: "إجراءات السيول المعتمدة", domain: "approved_actions" },
 };
 
@@ -86,7 +86,7 @@ export const CLAIMS: (SourceClaim & { receivedSec: number })[] = [
   {
     id: "clm-ncm-1",
     sourceId: "src-ncm",
-    subject: "weather:sharjah-central",
+    subject: "weather:abu-dhabi-central",
     value: "alert_orange",
     text: "Orange alert: convective rain 40–60 mm/h expected over Abu Dhabi central districts until 16:00.",
     textAr: "تنبيه برتقالي: أمطار رعدية بمعدل 40–60 ملم/ساعة متوقعة على المناطق الوسطى في أبوظبي حتى الساعة 16:00.",

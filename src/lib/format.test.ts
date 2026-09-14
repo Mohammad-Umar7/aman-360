@@ -57,3 +57,12 @@ describe("misc formatters", () => {
     expect(arabicDigits("14:02")).toBe("١٤:٠٢");
   });
 });
+
+describe("pct never rounds up to a threshold", () => {
+  it("floors", () => {
+    expect(pct(0.996)).toBe("99%");
+    expect(pct(0.999, 1)).toBe("99.9%");
+    expect(pct(1)).toBe("100%");
+    expect(pct(0.5)).toBe("50%");
+  });
+});
