@@ -143,7 +143,7 @@ export default function TriagePage() {
                           {t.status.replace("_", " ")}
                         </Badge>
                       </div>
-                      <Meter value={t.score / 100} tone={t.score >= 80 ? "alert" : t.score >= 50 ? "warn" : "brand"} label={`Score ${t.score}`} className="mt-2" />
+                      <Meter value={Math.min(1, t.score / 100)} tone={t.score >= 80 ? "alert" : t.score >= 50 ? "warn" : "brand"} label={`Score ${t.score}`} className="mt-2" />
                       <div className="text-[12px] text-ink-2 mt-1.5 leading-4.5">{t.recommended}</div>
                       {t.unit && (
                         <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-ink">

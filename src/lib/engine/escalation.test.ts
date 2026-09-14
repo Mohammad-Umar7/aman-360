@@ -31,10 +31,13 @@ describe("planEscalation", () => {
 });
 
 describe("triageScore", () => {
-  it("weights urgency, vulnerability, mobility, zone and silence and caps at 100", () => {
+  it("weights urgency, vulnerability, mobility, zone and silence without collapsing the top of the range", () => {
     const top = triageScore({ urgency: 5, vulnerable: true, mobility: "wheelchair", inZone: true });
-    expect(top.score).toBe(100);
+    expect(top.score).toBe(103);
     expect(top.reasons).toHaveLength(4);
+    const silentTop = triageScore({ urgency: 5, vulnerable: true, mobility: "wheelchair", inZone: true, noResponse: true });
+    expect(silentTop.score).toBeGreaterThan(top.score);
+    expect(top.reasons.map((r) => Number(/\+(\d+)/.exec(r)?.[1])).reduce((a, b) => a + b, 0)).toBe(top.score);
     const low = triageScore({ urgency: 2, vulnerable: false, mobility: "standard", inZone: false });
     expect(low.score).toBe(30);
     expect(low.reasons).toHaveLength(1);

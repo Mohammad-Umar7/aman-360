@@ -79,5 +79,6 @@ export function triageScore(opts: { urgency: number; vulnerable: boolean; mobili
     score += 10;
     reasons.push("No response after escalation (+10)");
   }
-  return { score: Math.min(100, score), reasons };
+  // No cap: the raw sum keeps every profile ordered and always equals the listed reasons.
+  return { score, reasons };
 }
