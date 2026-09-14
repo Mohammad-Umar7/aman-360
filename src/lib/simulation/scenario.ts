@@ -118,7 +118,7 @@ export function buildScenario(stepIndex: number): ScenarioState {
     timeline,
     kpis,
     operatorQueue: OPERATOR_QUEUE[s] ?? [],
-    summary: operatorSummary(s, kpis, triage, clock),
+    summary: operatorSummary(s, kpis, triage, people, clock),
     channelChecks,
   };
   cache.set(s, state);

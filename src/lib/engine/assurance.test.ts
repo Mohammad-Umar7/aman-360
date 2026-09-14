@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import { CLAIMS, SOURCES, SUBJECTS } from "@/lib/data/sources";
 import { assuranceScore, detectContradictions, verifyFacts } from "@/lib/engine/assurance";
 
-const claims = CLAIMS.map(({ receivedSec: _r, ...c }) => c);
+const claims = CLAIMS.map((c) => {
+  const copy: Partial<typeof c> = { ...c };
+  delete copy.receivedSec;
+  return copy as (typeof CLAIMS)[number];
+});
 
 describe("source data", () => {
   it("references known sources and subjects", () => {
