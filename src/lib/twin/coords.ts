@@ -20,6 +20,8 @@ export function buildingTop(id?: string): number {
   if (b.kind === "office") return BASE_H + 12.6 + b.floors * 3.6 + 6; // glass tower on a podium
   if (b.kind === "hospital") return BASE_H + b.floors * 3.6 + 2;
   if (b.kind === "mosque") return 28;
+  if (b.kind === "retail") return BASE_H + 9.8 + 0.4; // retail_centre: fixed 9.8 m hall in the Blender generator
+  if (b.kind === "community") return BASE_H + 8.4 + 6.2; // community_hall: 8.4 m hall plus its wind towers
   return BASE_H + 4.6 + (b.floors - 1) * FLOOR_H + 2.2;
 }
 

@@ -9,11 +9,12 @@ import { pointAlong } from "@/lib/engine/geometry";
 import { useScenario, useSim } from "@/lib/simulation/store";
 import { AMBULANCE_PATH, ahmedVehicle, ambulanceVehicle, closureVisible, hazardVisible } from "@/lib/simulation/visual";
 import { buildingTop, toWorld } from "@/lib/twin/coords";
-import type { PersonState } from "@/lib/types";
+import type { PersonState, PersonStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const STATUS_COLOR: Record<string, string> = {
+const STATUS_COLOR: Record<PersonStatus, string> = {
   normal: "#8b99ad",
+  assessing: "#8b99ad",
   affected: "#f2b544",
   message_ready: "#9b8cff",
   sent: "#5aa9ff",
@@ -28,8 +29,9 @@ const STATUS_COLOR: Record<string, string> = {
   resolved: "#34c77b",
   no_alert: "#8b99ad",
 };
-const STATUS_LABEL: Record<string, string> = {
+const STATUS_LABEL: Record<PersonStatus, string> = {
   normal: "",
+  assessing: "Assessing",
   affected: "Affected",
   message_ready: "Message ready",
   sent: "Sent",

@@ -21,6 +21,8 @@ export function Signage() {
     t.anisotropy = 4;
     return t;
   }, [canvas]);
+  // The material's dispose does not free its map; release the GPU texture when the sign unmounts.
+  useEffect(() => () => texture.dispose(), [texture]);
   const last = useRef("");
 
   const draw = (lines: string[], lang: "en" | "ar", live: boolean) => {
